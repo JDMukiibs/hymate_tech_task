@@ -1,0 +1,47 @@
+{
+  "@@locale": "de",
+  "homeAppBarTitle": "Startseite",
+  "@homeAppBarTitle": {
+    "description": "Text, der in der AppBar der Startseite angezeigt wird"
+  },
+  "homeAppBarMessage": "Willkommen auf der Startseite",
+  "@homeAppBarMessage": {
+    "description": "Text, der im Hauptteil der Startseite angezeigt wird"
+  },
+  "settingsAppBarTitle": "Einstellungen",
+  "@settingsAppBarTitle": {
+    "description": "Text für den Titel der App-Leiste der Einstellungsseite"
+  },
+  "languageAppBarTitle": "Sprache",
+  "@languageAppBarTitle": {
+    "description": "Text für den Titel der App-Leiste der Sprachauswahlseite"
+  },
+  "selectLanguage": "Sprache auswählen",
+  "@selectLanguage": {
+    "description": "Text für die Sprachauswahlseite"
+  },
+  "taskOnePageAppBarTitle": "Task One",
+  "@taskOnePageAppBarTitle": {
+    "description": "AppBar title for Task One page"
+  },
+  "taskOnePagePlaceholderMessage": "This is where Task One will be implemented.",
+  "@taskOnePagePlaceholderMessage": {
+    "description": "Placeholder message for Task One page body"
+  },
+  "taskTwoPageAppBarTitle": "Task Two",
+  "@taskTwoPageAppBarTitle": {
+    "description": "AppBar title for Task Two page"
+  },
+  "taskTwoPagePlaceholderMessage": "This is where Task Two will be implemented.",
+  "@taskTwoPagePlaceholderMessage": {
+    "description": "Placeholder message for Task Two page body"
+  },
+  "homePageNavigateToTaskOneButtonText": "Zu Aufgabe Eins",
+  "@homePageNavigateToTaskOneButtonText": {
+    "description": "Text für die Navigationsschaltfläche zu Aufgabe Eins auf der Startseite"
+  },
+  "homePageNavigateToTaskTwoButtonText": "Zu Aufgabe Zwei",
+  "@homePageNavigateToTaskTwoButtonText": {
+    "description": "Text für die Navigationsschaltfläche zu Aufgabe Zwei auf der Startseite"
+  }
+}

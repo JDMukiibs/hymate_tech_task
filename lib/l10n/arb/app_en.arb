@@ -1,0 +1,47 @@
+{
+  "@@locale": "en",
+  "homeAppBarTitle": "Home",
+  "@homeAppBarTitle": {
+    "description": "Text shown in the AppBar of the Home Page"
+  },
+  "homeAppBarMessage": "Welcome to the Homepage",
+  "@homeAppBarMessage": {
+    "description": "Text shown in the body of the Home Page"
+  },
+  "settingsAppBarTitle": "Settings",
+  "@settingsAppBarTitle": {
+    "description": "Text for Settings page app bar title"
+  },
+  "languageAppBarTitle": "Language",
+  "@languageAppBarTitle": {
+    "description": "Text for Select Language page app bar title"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Text for Select Language page app bar title"
+  },
+  "taskOnePageAppBarTitle": "Task One",
+  "@taskOnePageAppBarTitle": {
+    "description": "AppBar title for Task One page"
+  },
+  "taskOnePagePlaceholderMessage": "This is where Task One will be implemented.",
+  "@taskOnePagePlaceholderMessage": {
+    "description": "Placeholder message for Task One page body"
+  },
+  "taskTwoPageAppBarTitle": "Task Two",
+  "@taskTwoPageAppBarTitle": {
+    "description": "AppBar title for Task Two page"
+  },
+  "taskTwoPagePlaceholderMessage": "This is where Task Two will be implemented.",
+  "@taskTwoPagePlaceholderMessage": {
+    "description": "Placeholder message for Task Two page body"
+  },
+  "homePageNavigateToTaskOneButtonText": "Go to Task One",
+  "@homePageNavigateToTaskOneButtonText": {
+    "description": "Text for the navigation button to Task One on the Home Page"
+  },
+  "homePageNavigateToTaskTwoButtonText": "Go to Task Two",
+  "@homePageNavigateToTaskTwoButtonText": {
+    "description": "Text for the navigation button to Task Two on the Home Page"
+  }
+}
