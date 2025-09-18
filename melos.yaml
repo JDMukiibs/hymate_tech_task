@@ -1,0 +1,12 @@
+name: hymate_tech_task
+
+packages:
+  - packages/**
+
+scripts:
+  analyze:
+    run: flutter analyze .
+  test:
+    run: flutter test
+  format:
+    run: dart format .

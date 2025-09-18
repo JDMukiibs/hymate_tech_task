@@ -69,8 +69,8 @@ This section provides a high-level overview of how the application is structured
 
 For your reference, here's an estimate of time spent on key tasks:
 
-* **Project Setup & Environment Configuration:** `2 hours`
-* **Core Chart Implementation:** `[e.g., 6 hours]`
+* **Project Setup & Environment Configuration:** `2.5 hours`
+* **Core Chart Implementation:** `1.5 hours*`
 * **Data Integration (Mock/API):** `[e.g., 3 hours]`
 * **UI/UX (Layout, Styling, Responsiveness):** `[e.g., 4 hours]`
 * **Error Handling & Edge Cases:** `[e.g., 1 hour]`
