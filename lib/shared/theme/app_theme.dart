@@ -27,7 +27,6 @@ class AppTheme {
       appBarStyle: FlexAppBarStyle.primary,
       subThemesData: const FlexSubThemesData(
         blendOnLevel: 10,
-        blendOnColors: false,
         useM2StyleDividerInM3: true,
         thinBorderWidth: 1.5,
         filledButtonRadius: 12,
@@ -65,7 +64,6 @@ class AppTheme {
       scheme: FlexScheme.green,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
       blendLevel: 13,
-      // appBarStyle: FlexAppBarStyle.surface, // Black app bar
       subThemesData: const FlexSubThemesData(
         blendOnLevel: 20,
         useM2StyleDividerInM3: true,

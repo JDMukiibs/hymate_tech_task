@@ -40,24 +40,46 @@ You can find your current versions by running `flutter --version` in your termin
 This section provides a high-level overview of how the application is structured and key technical
 decisions.
 
-* **Architecture:** Briefly describe the architectural pattern used (e.g., MVVM, BLoC, Provider,
-  Riverpod, simple stateful widgets).
+* **Architecture:**
+    * Feature-based folder structure with separation of concerns (models, views,
+      providers/controllers, services, widgets).
+    * Uses Flutter Riverpod for state management.
+    * Package-based modularization with Melos for managing multiple packages.
+
 * **Key Features Implemented:**
-    * [List major features, e.g., "Chart visualization for energy data"]
+    * Chart visualization for energy data
+    * Interactive controls for selecting date ranges, metrics, and series
+    * Responsive design for desktop and web platforms
+    * Error handling for network requests and data parsing
+    * Custom theming and styling for a polished UI
     * [e.g., "Dynamic data loading and rendering"]
     * [e.g., "Responsive UI for desktop and web"]
+
 * **Core Libraries/Packages:**
-    * `package_name_1`: [Briefly describe its use]
-    * `package_name_2`: [Briefly describe its use]
-* **Data Handling:
-  ** [How is data fetched, parsed, and managed? e.g., "Uses a mock API service for data fetching."]
+    * `custom_charts`: The custom charting package developed as part of the task with coordination
+      between multiple series, legends, and axes.
+    * `flutter_riverpod`: For state management and dependency injection.
+    * `dio`: For making network requests to fetch data.
+
+* **Data Handling:**
+    * Task One uses an api service to fetch data from the given data source:
+      `https://api.energy-charts.info/`
+    * Data is parsed into Dart models using `json_serializable`.
+    * Error handling is implemented for network requests and data parsing.
+    *
 
 ---
 
 ## 💡 Notes about Assumptions, Limitations, or Extra Work Done
 
 * **Assumptions:**
-    * [e.g., "Assumed data would be available in a specific JSON format."]
+    * Task One:
+        * The data source is reliable and returns data in the expected format.
+        * Date ranges are inclusive of the start and end dates.
+        * The user will select valid date ranges (start date before end date).
+        * For `total_power` metric, for some production types particularly "Hydro Pumped Storage
+          consumption" and "Cross border electricity trading",
+          negative values are possible and should be displayed as-is.
     * [e.g., "Assumed the target environment would be desktop/web, prioritizing responsive layout over mobile-specific gestures."]
 * **Limitations:**
     * [e.g., "Currently, data refresh is manual; no real-time updates implemented."]
@@ -66,7 +88,7 @@ decisions.
 * **Extra Work Done:**
     * [e.g., "Implemented a custom theme to match a specific brand guide."]
     * [e.g., "Created a reusable chart component that can be easily extended."]
-    * [e.g., "Designed a custom 404 error page (referencing the one we made earlier!)."]
+    * Designed a custom 404 error page
 
 ---
 
@@ -75,11 +97,11 @@ decisions.
 For your reference, here's an estimate of time spent on key tasks:
 
 * **Project Setup & Environment Configuration:** `2.5 hours`
-* **Core Chart Implementation:** `1.5 hours*`
-* **Data Integration (Mock/API):** `[e.g., 3 hours]`
+* **Core Chart Implementation:** `7.5 hours*`
+* **Data Integration (Mock/API):** `2.5 hours`
 * **UI/UX (Layout, Styling, Responsiveness):** `[e.g., 4 hours]`
-* **Error Handling & Edge Cases:** `[e.g., 1 hour]`
-* **README Documentation:** `[e.g., 0.5 hours]`
+* **Error Handling & Edge Cases:** `1 hour*`
+* **README Documentation:** `0.5 hours*`
 * **Total Estimated Time:** `[e.g., 16.5 hours]`
 
 ---
