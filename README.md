@@ -7,20 +7,22 @@ Flutter Tech Task for Hymate
 
 Follow these steps to get the project up and running on your local machine.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-    cd your-repo-name
-    ```
-2.  **Install dependencies:**
-    ```bash
-    flutter pub get
-    ```
-3.  **Run the application:**
-    ```bash
-    flutter run
-    ```
-    (You may need to specify a device or browser for desktop/web: `flutter run -d chrome` or `flutter run -d windows`)
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+   cd your-repo-name
+   ```
+2. **Install dependencies:**
+   ```bash
+   melos bootstrap
+   flutter pub get
+   ```
+3. **Run the application:**
+   ```bash
+   flutter run
+   ```
+   (You may need to specify a device or browser for desktop/web: `flutter run -d chrome` or
+   `flutter run -d windows`)
 
 ---
 
@@ -35,9 +37,11 @@ You can find your current versions by running `flutter --version` in your termin
 
 ## 📝 Small Description of the Implementation
 
-This section provides a high-level overview of how the application is structured and key technical decisions.
+This section provides a high-level overview of how the application is structured and key technical
+decisions.
 
-* **Architecture:** Briefly describe the architectural pattern used (e.g., MVVM, BLoC, Provider, Riverpod, simple stateful widgets).
+* **Architecture:** Briefly describe the architectural pattern used (e.g., MVVM, BLoC, Provider,
+  Riverpod, simple stateful widgets).
 * **Key Features Implemented:**
     * [List major features, e.g., "Chart visualization for energy data"]
     * [e.g., "Dynamic data loading and rendering"]
@@ -45,7 +49,8 @@ This section provides a high-level overview of how the application is structured
 * **Core Libraries/Packages:**
     * `package_name_1`: [Briefly describe its use]
     * `package_name_2`: [Briefly describe its use]
-* **Data Handling:** [How is data fetched, parsed, and managed? e.g., "Uses a mock API service for data fetching."]
+* **Data Handling:
+  ** [How is data fetched, parsed, and managed? e.g., "Uses a mock API service for data fetching."]
 
 ---
 
@@ -76,3 +81,30 @@ For your reference, here's an estimate of time spent on key tasks:
 * **Error Handling & Edge Cases:** `[e.g., 1 hour]`
 * **README Documentation:** `[e.g., 0.5 hours]`
 * **Total Estimated Time:** `[e.g., 16.5 hours]`
+
+---
+
+## 🧩 New: Task One small widgets
+
+The Task One view was refactored to extract three small, reusable widgets to make the charting UI
+easier to test and maintain:
+
+- `Controls` (lib/tasks/view/widgets/controls.dart)
+    - Encapsulates user controls for the chart: date range picker, metric selector (total_power /
+      price), bidding-zone dropdown for price, series selection chips, and the Update Chart button.
+    - Designed to be UI-only: it receives the current `TaskOneChartState` and callback handlers for
+      all interactions so the controller can remain the single source of truth.
+
+- `ChartWithLegend` (lib/tasks/view/widgets/chart_with_legend.dart)
+    - Renders the area chart and a vertical legend side-by-side.
+    - Handles empty / loading / not-found states and delegates retry and series toggle actions back
+      to the caller.
+
+- `Legend` (lib/tasks/view/widgets/legend.dart)
+    - A compact vertical legend listing series names, colours, and a checkbox to show/hide each
+      series.
+
+These widgets are small and intentionally focused on a single responsibility to improve readability
+and testability. They are exported via `lib/tasks/widgets/widgets.dart`.
+
+---

@@ -31,7 +31,8 @@ class ProductionType {
   factory ProductionType.fromJson(Map<String, dynamic> json) =>
       _$ProductionTypeFromJson(json);
   final String name;
-  final List<double> data;
+  /// After testing with the API, it seems that some values can be null.
+  final List<double?> data;
 
   Map<String, dynamic> toJson() => _$ProductionTypeToJson(this);
 }

@@ -1,9 +1,19 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:hymate_tech_task/api/api_client/api_client.dart';
 import 'package:hymate_tech_task/api/exceptions/hymate_tech_task_exception.dart';
 import 'package:hymate_tech_task/api/models/models.dart';
+
+/// Public interface used by consumers (allows swapping in fakes for tests)
+abstract class TaskOneApiServiceInterface {
+  Future<TotalPowerResponse> getTotalPower({
+    required TotalPowerRequest request,
+  });
+
+  Future<PriceResponse> getPrice({required PriceRequest request});
+}
 
 abstract class _TaskOneApiService {
   Future<TotalPowerResponse> getTotalPower({
@@ -13,13 +23,13 @@ abstract class _TaskOneApiService {
   Future<PriceResponse> getPrice({required PriceRequest request});
 }
 
-class TaskOneApiService extends _TaskOneApiService {
+class TaskOneApiService extends _TaskOneApiService implements TaskOneApiServiceInterface {
   TaskOneApiService({
     required ApiClient apiClient,
   }) : _apiClient = apiClient;
 
   final ApiClient _apiClient;
-  static const String _totalPowerEndpoint = 'total-power';
+  static const String _totalPowerEndpoint = 'total_power';
   static const String _priceEndpoint = 'price';
 
   @override

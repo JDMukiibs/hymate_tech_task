@@ -28,7 +28,7 @@ ProductionType _$ProductionTypeFromJson(Map<String, dynamic> json) =>
     ProductionType(
       name: json['name'] as String,
       data: (json['data'] as List<dynamic>)
-          .map((e) => (e as num).toDouble())
+          .map((e) => (e as num?)?.toDouble())
           .toList(),
     );
 

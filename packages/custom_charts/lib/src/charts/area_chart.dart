@@ -187,8 +187,8 @@ class AreaChartPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(text: label, style: textStyle),
         textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
+      )
+      ..layout();
       textPainter.paint(
         canvas,
         Offset(
@@ -235,8 +235,8 @@ class AreaChartPainter extends CustomPainter {
         final textPainter = TextPainter(
           text: TextSpan(text: label, style: textStyle),
           textDirection: TextDirection.ltr,
-        );
-        textPainter.layout();
+        )
+        ..layout();
         textPainter.paint(
           canvas,
           Offset(
@@ -258,12 +258,13 @@ class AreaChartPainter extends CustomPainter {
     double niceStep;
     if (normalizedStep <= 1) {
       niceStep = 1;
-    } else if (normalizedStep <= 2)
+    } else if (normalizedStep <= 2) {
       niceStep = 2;
-    else if (normalizedStep <= 5)
+    } else if (normalizedStep <= 5) {
       niceStep = 5;
-    else
+    } else {
       niceStep = 10;
+    }
 
     return niceStep * magnitude;
   }

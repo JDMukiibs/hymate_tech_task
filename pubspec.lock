@@ -329,7 +329,7 @@ packages:
     source: hosted
     version: "2.1.1"
   equatable:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: equatable
       sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
@@ -876,6 +876,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
+  reactive_date_time_picker:
+    dependency: "direct main"
+    description:
+      name: reactive_date_time_picker
+      sha256: f6a81e2cb606c3dbc53c96e8f259b543911049fd049b072cf8ce526249855348
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.1"
+  reactive_forms:
+    dependency: "direct main"
+    description:
+      name: reactive_forms
+      sha256: "4c8fe71f21ac88996c01a56fe19ea5ec39b47292cb07f99a467e1bb977136a98"
+      url: "https://pub.dev"
+    source: hosted
+    version: "18.1.1"
   riverpod:
     dependency: transitive
     description:
