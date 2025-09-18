@@ -1,38 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
+/// Lightweight ApiClient wrapping a configured [Dio] instance.
 class ApiClient {
-  factory ApiClient({
-    required CacheOptions cacheOptions,
-    Dio? dioOverride,
-    bool enableInterceptors = true,
-  }) {
-    _instance._dio = _instance._dio ?? dioOverride!;
+  ApiClient({
+    required this.dio,
+    this.baseUrl = 'https://api.energy-charts.info/',
+  });
 
-    if (enableInterceptors) {
-      _instance._dio!.interceptors.add(
-        DioCacheInterceptor(options: cacheOptions),
-      );
-      _instance._dio!.interceptors.add(LogInterceptor());
-    }
+  final Dio dio;
+  final String baseUrl;
 
-    return _instance;
-  }
-
-  ApiClient._(this.cacheOptions);
-
-  Dio? _dio;
-  final CacheOptions cacheOptions;
-
-  static const String baseUrl = 'https://api.energy-charts.info/';
-
-  static final ApiClient _instance = ApiClient._();
-  late String languageCode;
-
-  BaseOptions _getBaseOptions(
-    String baseUrl,
-    Map<String, String>? headers,
-  ) {
+  BaseOptions _getBaseOptions(Map<String, String>? headers) {
     return BaseOptions(
       baseUrl: baseUrl,
       headers: headers,
@@ -45,12 +23,8 @@ class ApiClient {
     Map<String, String>? headers,
     Map<String, dynamic>? queryParameters,
   }) {
-    _dio!.options = _getBaseOptions(baseUrl, headers);
-
-    return _dio!.get(
-      endpoint,
-      queryParameters: queryParameters,
-    );
+    dio.options = _getBaseOptions(headers);
+    return dio.get(endpoint, queryParameters: queryParameters);
   }
 
   Future<Response> post(
@@ -59,14 +33,11 @@ class ApiClient {
     Object? body,
     Map<String, dynamic>? queryParameters,
   }) async {
-    _dio!.options = _getBaseOptions(baseUrl, headers);
-
-    final response = await _dio!.post(
+    dio.options = _getBaseOptions(headers);
+    return dio.post(
       endpoint,
       data: body,
       queryParameters: queryParameters,
     );
-
-    return response;
   }
 }

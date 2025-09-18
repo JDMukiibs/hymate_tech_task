@@ -15,8 +15,8 @@ abstract class _TaskOneApiService {
 
 class TaskOneApiService extends _TaskOneApiService {
   TaskOneApiService({
-    ApiClient? apiClient,
-  }) : _apiClient = apiClient ?? ApiClient();
+    required ApiClient apiClient,
+  }) : _apiClient = apiClient;
 
   final ApiClient _apiClient;
   static const String _totalPowerEndpoint = 'total-power';
