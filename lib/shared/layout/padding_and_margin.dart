@@ -24,7 +24,7 @@ const verticalMargin48 = SizedBox(height: 48);
 
 // Paddings
 
-const emptyPadding = EdgeInsets.zero;
+const EdgeInsets emptyPadding = EdgeInsets.zero;
 
 const horizontalPadding4 = EdgeInsets.symmetric(horizontal: 4);
 const horizontalPadding8 = EdgeInsets.symmetric(horizontal: 8);

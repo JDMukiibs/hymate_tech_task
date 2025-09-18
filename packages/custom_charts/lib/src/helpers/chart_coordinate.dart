@@ -2,11 +2,6 @@ import 'package:custom_charts/custom_charts.dart';
 import 'package:flutter/material.dart';
 
 class ChartCoordinates {
-  final double minY, maxY;
-  final DateTime minTime, maxTime;
-  final Size canvasSize;
-  final EdgeInsets padding;
-
   ChartCoordinates({
     required this.minY,
     required this.maxY,
@@ -15,6 +10,13 @@ class ChartCoordinates {
     required this.canvasSize,
     required this.padding,
   });
+
+  final double minY;
+  final double maxY;
+  final DateTime minTime;
+  final DateTime maxTime;
+  final Size canvasSize;
+  final EdgeInsets padding;
 
   Offset dataToPixel(ChartPoint point) {
     final plotWidth = canvasSize.width - padding.horizontal;

@@ -8,7 +8,7 @@ import 'package:hymate_tech_task/tasks/tasks.dart';
 
 part 'app_router.gr.dart';
 
-final appRouterProvider = Provider(
+final Provider<AppRouter> appRouterProvider = Provider(
   (ref) => AppRouter(),
 );
 
@@ -19,27 +19,27 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(
-          path: AppRoutes.splashRoute,
-          page: SplashRoute.page,
-          initial: true,
-        ),
-        AutoRoute(path: AppRoutes.homeRoute, page: HomeRoute.page),
-        AutoRoute(
-          path: AppRoutes.taskOneRoute,
-          page: TaskOneRoute.page,
-        ),
-        AutoRoute(
-          path: AppRoutes.taskTwoRoute,
-          page: TaskTwoRoute.page,
-        ),
-        AutoRoute(
-          path: AppRoutes.settingsRoute,
-          page: SettingsRoute.page,
-        ),
-        AutoRoute(
-          path: AppRoutes.settingsLanguageRoute,
-          page: SelectLanguageRoute.page,
-        ),
-      ];
+    AutoRoute(
+      path: AppRoutes.splashRoute,
+      page: SplashRoute.page,
+      initial: true,
+    ),
+    AutoRoute(path: AppRoutes.homeRoute, page: HomeRoute.page),
+    AutoRoute(
+      path: AppRoutes.taskOneRoute,
+      page: TaskOneRoute.page,
+    ),
+    AutoRoute(
+      path: AppRoutes.taskTwoRoute,
+      page: TaskTwoRoute.page,
+    ),
+    AutoRoute(
+      path: AppRoutes.settingsRoute,
+      page: SettingsRoute.page,
+    ),
+    AutoRoute(
+      path: AppRoutes.settingsLanguageRoute,
+      page: SelectLanguageRoute.page,
+    ),
+  ];
 }

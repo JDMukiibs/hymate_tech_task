@@ -6,16 +6,16 @@ import 'package:custom_charts/src/models/chart_data.dart';
 import 'package:flutter/material.dart';
 
 class AreaChart extends StatelessWidget {
+  const AreaChart({
+    required this.series,
+    super.key,
+    this.animationDuration = const Duration(milliseconds: 800),
+    this.padding = const EdgeInsets.all(40),
+  });
+
   final List<ChartSeries> series;
   final Duration animationDuration;
   final EdgeInsets padding;
-
-  const AreaChart({
-    Key? key,
-    required this.series,
-    this.animationDuration = const Duration(milliseconds: 800),
-    this.padding = const EdgeInsets.all(40),
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +30,13 @@ class AreaChart extends StatelessWidget {
 }
 
 class AreaChartPainter extends CustomPainter {
-  final List<ChartSeries> series;
-  final EdgeInsets padding;
-
   AreaChartPainter({
     required this.series,
     required this.padding,
   });
+
+  final List<ChartSeries> series;
+  final EdgeInsets padding;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -54,8 +54,8 @@ class AreaChartPainter extends CustomPainter {
   }
 
   ChartCoordinates _calculateCoordinates(Size size) {
-    double minY = double.infinity;
-    double maxY = double.negativeInfinity;
+    var minY = double.infinity;
+    var maxY = double.negativeInfinity;
     DateTime? minTime;
     DateTime? maxTime;
 
@@ -86,10 +86,12 @@ class AreaChartPainter extends CustomPainter {
     );
   }
 
-  void _drawAreaSeries(Canvas canvas,
-      Size size,
-      ChartSeries seriesData,
-      ChartCoordinates coords,) {
+  void _drawAreaSeries(
+    Canvas canvas,
+    Size size,
+    ChartSeries seriesData,
+    ChartCoordinates coords,
+  ) {
     if (seriesData.points.isEmpty) return;
 
     final path = Path();
@@ -98,16 +100,16 @@ class AreaChartPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          seriesData.color.withOpacity(0.8),
-          seriesData.color.withOpacity(0.1),
+          seriesData.color.withValues(alpha: 0.8),
+          seriesData.color.withValues(alpha: 0.1),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
     // Start path at bottom-left of first point
     final firstPoint = coords.dataToPixel(seriesData.points.first);
-    path.moveTo(firstPoint.dx, size.height - padding.bottom);
-    path.lineTo(firstPoint.dx, firstPoint.dy);
+    path..moveTo(firstPoint.dx, size.height - padding.bottom)
+    ..lineTo(firstPoint.dx, firstPoint.dy);
 
     // Draw line through all data points
     for (final point in seriesData.points) {
@@ -117,8 +119,8 @@ class AreaChartPainter extends CustomPainter {
 
     // Close path at bottom-right
     final lastPoint = coords.dataToPixel(seriesData.points.last);
-    path.lineTo(lastPoint.dx, size.height - padding.bottom);
-    path.close();
+    path..lineTo(lastPoint.dx, size.height - padding.bottom)
+    ..close();
 
     // Draw filled area
     canvas.drawPath(path, paint);
@@ -133,7 +135,7 @@ class AreaChartPainter extends CustomPainter {
     final firstPixel = coords.dataToPixel(seriesData.points.first);
     linePath.moveTo(firstPixel.dx, firstPixel.dy);
 
-    for (int i = 1; i < seriesData.points.length; i++) {
+    for (var i = 1; i < seriesData.points.length; i++) {
       final pixel = coords.dataToPixel(seriesData.points[i]);
       linePath.lineTo(pixel.dx, pixel.dy);
     }
@@ -143,11 +145,11 @@ class AreaChartPainter extends CustomPainter {
 
   void _drawDynamicAxes(Canvas canvas, Size size, ChartCoordinates coords) {
     final axisPaint = Paint()
-      ..color = Colors.grey.withOpacity(0.3)
+      ..color = Colors.grey.withValues(alpha: 0.3)
       ..strokeWidth = 1.0;
 
     final textStyle = TextStyle(
-      color: Colors.grey.withOpacity(0.8),
+      color: Colors.grey.withValues(alpha: 0.8),
       fontSize: 11,
     );
 
@@ -155,21 +157,23 @@ class AreaChartPainter extends CustomPainter {
     _drawDynamicXAxis(canvas, coords, axisPaint, textStyle);
   }
 
-  void _drawDynamicYAxis(Canvas canvas,
-      ChartCoordinates coords,
-      Paint axisPaint,
-      TextStyle textStyle,) {
+  void _drawDynamicYAxis(
+    Canvas canvas,
+    ChartCoordinates coords,
+    Paint axisPaint,
+    TextStyle textStyle,
+  ) {
     final yRange = coords.maxY - coords.minY;
     final niceStep = _calculateNiceStep(yRange, 6);
     final firstTick = (coords.minY / niceStep).ceil() * niceStep;
 
-    double currentValue = firstTick;
+    var currentValue = firstTick;
     while (currentValue <= coords.maxY) {
       final progress = (currentValue - coords.minY) / yRange;
       final y =
           coords.canvasSize.height -
-              coords.padding.bottom -
-              (progress * (coords.canvasSize.height - coords.padding.vertical));
+          coords.padding.bottom -
+          (progress * (coords.canvasSize.height - coords.padding.vertical));
 
       // Draw grid line
       canvas.drawLine(
@@ -197,15 +201,17 @@ class AreaChartPainter extends CustomPainter {
     }
   }
 
-  void _drawDynamicXAxis(Canvas canvas,
-      ChartCoordinates coords,
-      Paint axisPaint,
-      TextStyle textStyle,) {
+  void _drawDynamicXAxis(
+    Canvas canvas,
+    ChartCoordinates coords,
+    Paint axisPaint,
+    TextStyle textStyle,
+  ) {
     final timeRange = coords.maxTime.difference(coords.minTime);
     final timeStepMinutes = math.max(60, (timeRange.inMinutes / 4).round());
     final timeStep = Duration(minutes: timeStepMinutes);
 
-    DateTime currentTime = DateTime(
+    var currentTime = DateTime(
       coords.minTime.year,
       coords.minTime.month,
       coords.minTime.day,
@@ -225,8 +231,7 @@ class AreaChartPainter extends CustomPainter {
 
         // Draw label
         final label =
-            '${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute
-            .toString().padLeft(2, '0')}';
+            '${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
         final textPainter = TextPainter(
           text: TextSpan(text: label, style: textStyle),
           textDirection: TextDirection.ltr,
@@ -251,9 +256,9 @@ class AreaChartPainter extends CustomPainter {
     final normalizedStep = roughStep / magnitude;
 
     double niceStep;
-    if (normalizedStep <= 1)
+    if (normalizedStep <= 1) {
       niceStep = 1;
-    else if (normalizedStep <= 2)
+    } else if (normalizedStep <= 2)
       niceStep = 2;
     else if (normalizedStep <= 5)
       niceStep = 5;
