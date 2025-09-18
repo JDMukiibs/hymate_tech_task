@@ -60,40 +60,259 @@ dev:<package_name>`.
 
 ### State Management
 
-- Default to Flutter's built-in state management solutions. Do not use a
-  third-party package unless explicitly requested.
-- Use `Streams` and `StreamBuilder` for handling a sequence of asynchronous
-  events.
-- Use `Futures` and `FutureBuilder` for handling a single asynchronous
-  operation that will complete in the future.
-- Use `ValueNotifier` with `ValueListenableBuilder` for simple, local state
-  that involves a single value.
+- Use Flutter Riverpod 3.0 as the primary state management solution with code generation for optimal
+  developer experience.
+
+#### Basic Setup
 
 ```dart
-// Define a ValueNotifier to hold the state.
-final ValueNotifier<int> _counter = ValueNotifier<int>(0);
+// 1. Add the dependencies
+// flutter pub add flutter_riverpod
+// flutter pub add riverpod_annotation
+// flutter pub add dev:riverpod_generator
+// flutter pub add dev:build_runner
 
-// Use ValueListenableBuilder to listen and rebuild.
-ValueListenableBuilder<int>(
-  valueListenable: _counter,
-  builder: (context, value, child) {
-    return Text('Count: $value');
-  },
-);
+// 2. Wrap your app with ProviderScope and observers
+void main() => bootstrap();
+
+Future<void> bootstrap() async {
+  // Initialize services
+  final logger = Logger();
+  final loggingService = LoggingService(logger: logger);
+  final providerObserver = ProviderLogger(logger);
+
+  runApp(
+    ProviderScope(
+      observers: [providerObserver],
+      overrides: [
+        loggingServiceProvider.overrideWithValue(loggingService),
+        // ... other service overrides
+      ],
+      child: const App(),
+    ),
+  );
+}
 ```
 
-- For state that is more complex or shared across multiple widgets, use
-  `ChangeNotifier`.
-- Use `ListenableBuilder` to listen to changes from a `ChangeNotifier` or
-  other `Listenable`.
-- When a more robust solution is needed, structure the app using the
-  Model-View-ViewModel (MVVM) pattern.
-- Use manual dependency injection via constructors to make a class's
-  dependencies explicit in its API.
-- Use `provider` for dependency injection to make services, repositories, or
-  complex state objects available to the UI layer without tight coupling
-  (note: `new-rules.md` generally defaults against third-party packages for
-  state management unless explicitly requested).
+#### Provider Types with Code Generation
+
+```dart
+// providers/counter_provider.dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'counter_provider.g.dart';
+
+// Simple provider
+@riverpod
+int counter(CounterRef ref) => 0;
+
+// Async provider
+@riverpod
+Future<String> fetchUserData(FetchUserDataRef ref, String userId) async {
+  // Your async logic here
+  return 'User data for $userId';
+}
+
+// Notifier for complex state
+@riverpod
+class CounterNotifier extends _$CounterNotifier {
+  @override
+  int build() => 0;
+
+  void increment() => state++;
+
+  void decrement() => state--;
+
+  void reset() => state = 0;
+}
+
+// Async Notifier for complex async state
+@riverpod
+class UserNotifier extends _$UserNotifier {
+  @override
+  Future<User?> build() async {
+    // Initial async state loading
+    return await _fetchCurrentUser();
+  }
+
+  Future<void> updateUser(User user) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await _updateUserInDatabase(user);
+      return user;
+    });
+  }
+
+  Future<User?> _fetchCurrentUser() async {
+    // Your implementation
+  }
+
+  Future<void> _updateUserInDatabase(User user) async {
+    // Your implementation
+  }
+}
+```
+
+#### Consuming Providers
+
+```dart
+class MyWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch a provider
+    final count = ref.watch(counterProvider);
+    final userData = ref.watch(fetchUserDataProvider('123'));
+    final userAsyncValue = ref.watch(userNotifierProvider);
+
+    return Column(
+      children: [
+        Text('Count: $count'),
+
+        // Handle async state with pattern matching
+        userAsyncValue.when(
+          data: (user) => Text(user?.name ?? 'No user'),
+          loading: () => const CircularProgressIndicator(),
+          error: (error, stack) => Text('Error: $error'),
+        ),
+
+        ElevatedButton(
+          onPressed: () {
+            // Trigger state changes
+            ref.read(counterNotifierProvider.notifier).increment();
+          },
+          child: const Text('Increment'),
+        ),
+      ],
+    );
+  }
+}
+```
+
+#### Advanced Features (Riverpod 3.0)
+
+```dart
+// Family providers (automatic with parameters)
+@riverpod
+Future<Post> fetchPost(FetchPostRef ref, int postId) async {
+  return await apiClient.getPost(postId);
+}
+
+// Auto-dispose (default in Riverpod 3.0)
+@riverpod
+class TimerNotifier extends _$TimerNotifier {
+  Timer? _timer;
+
+  @override
+  int build() {
+    ref.onDispose(() => _timer?.cancel());
+    _startTimer();
+    return 0;
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      state++;
+    });
+  }
+}
+
+// Listening to other providers
+@riverpod
+class DerivedStateNotifier extends _$DerivedStateNotifier {
+  @override
+  String build() {
+    final count = ref.watch(counterProvider);
+    return 'Current count is: $count';
+  }
+}
+
+// Automatic Retry (new in 3.0)
+@riverpod
+class NetworkDataNotifier extends _$NetworkDataNotifier {
+  @override
+  Future<String> build() async {
+    // Automatic retry with exponential backoff on failure
+    return await _fetchDataFromNetwork();
+  }
+
+  Future<String> _fetchDataFromNetwork() async {
+    // Your network implementation
+    throw Exception('Network error'); // Will automatically retry
+  }
+}
+```
+
+#### New Features in Riverpod 3.0
+
+```dart
+// Ref.mounted - Check if provider is still active
+@riverpod
+class DataNotifier extends _$DataNotifier {
+  @override
+  List<String> build() => [];
+
+  Future<void> addItem(String item) async {
+    await someAsyncOperation();
+
+    // Check if provider is still mounted before updating
+    if (!ref.mounted) return;
+
+    state = [...state, item];
+  }
+}
+
+// Mutations (experimental) - Handle side effects
+final addTodoMutation = Mutation<void>();
+
+// In your widget
+ElevatedButton
+(
+onPressed: () {
+addTodoMutation.run(ref, (tsx) async {
+await tsx.get(todoListProvider.notifier).addTodo('New Todo');
+});
+},
+child: const Text('Add Todo'),
+)
+```
+
+- Generate provider code using:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+#### Error Handling & Retry
+
+```dart
+@riverpod
+class DataNotifier extends _$DataNotifier {
+  @override
+  Future<String> build() async {
+    // Automatic retry is built-in for failed providers in 3.0
+    return await _fetchData();
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetchData());
+  }
+
+  Future<String> _fetchData() async {
+    // Your implementation with potential failures
+    throw Exception('Network error');
+  }
+}
+```
+
+#### Key Advantages of Riverpod 3.0
+
+- **Unified API**: Consistent syntax across all provider types
+- **Automatic Retry**: Built-in exponential backoff retry logic
+- **Better Code Generation**: Improved developer experience with `@riverpod` annotation
+- **Enhanced Testing**: New utilities like `ProviderContainer.test`
+- **Ref.mounted**: Similar to `BuildContext.mounted` for safer async operations
+- **Experimental Features**: Offline persistence and mutations for advanced use cases
 
 ### Data Flow
 
@@ -104,50 +323,93 @@ ValueListenableBuilder<int>(
 
 ### Routing
 
-- Use `go_router` for declarative navigation, deep linking, and web support.
+- Use `auto_route` for declarative navigation, deep linking, and web support with code generation.
 
-  ```dart
-  // 1. Add the dependency
-  // flutter pub add go_router
+```dart
+// 1. Add the dependencies
+// flutter pub add auto_route
+// flutter pub add dev:auto_route_generator
+// flutter pub add dev:build_runner
 
-  // 2. Configure the router
-  final GoRouter _router = GoRouter(
-    routes: <RouteBase>[
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeScreen(),
-        routes: <RouteBase>[
-          GoRoute(
-            path: 'details/:id', // Route with a path parameter
-            builder: (context, state) {
-              final String id = state.pathParameters['id']!;
-              return DetailScreen(id: id);
-            },
-          ),
-        ],
-      ),
-    ],
-  );
+// 2. Configure the router with code generation
+import 'package:auto_route/auto_route.dart';
+import 'app_router.gr.dart'; // Generated file
 
-  // 3. Use it in your MaterialApp
-  MaterialApp.router(
-    routerConfig: _router,
-  );
-  ```
+@AutoRouterConfig()
+class AppRouter extends RootStackRouter {
+  @override
+  RouteType get defaultRouteType => const RouteType.material();
+
+  @override
+  List<AutoRoute> get routes =>
+      [
+        AutoRoute(
+          page: HomeWrapperRoute.page,
+          path: '/',
+          initial: true,
+        ),
+        AutoRoute(
+          page: DetailsWrapperRoute.page,
+          path: '/details/:id',
+        ),
+      ];
+}
+
+// 3. Create page wrappers with @RoutePage annotation
+@RoutePage(name: 'HomeWrapperRoute')
+class HomeWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => const HomeScreen();
+}
+
+@RoutePage(name: 'DetailsWrapperRoute')
+class DetailsWrapper extends StatelessWidget {
+  final String id;
+
+  const DetailsWrapper({required this.id});
+
+  @override
+  Widget build(BuildContext context) => DetailsScreen(id: id);
+}
+
+// 4. Use it in your MaterialApp
+MaterialApp.router
+(
+routerConfig: AppRouter().config(),
+);
+
+// 5. Navigation usage
+context.router.push(DetailsWrapperRoute(id: '123'));
+context.router.pushAndClearStack(HomeWrapperRoute());
+context.router
+.
+pop
+(
+);
+```
+
+- Generate routing code using:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
 
 - Use the built-in `Navigator` for short-lived screens that do not need to be
   deep-linkable, such as dialogs or temporary views.
 
-  ```dart
-  // Push a new screen onto the stack
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const DetailsScreen()),
-  );
+```dart
+// Push a new screen onto the stack
+Navigator.push
+(
+context,
+MaterialPageRoute(builder: (context) => const DetailsScreen()),
+);
 
-  // Pop the current screen to go back
-  Navigator.pop(context);
-  ```
+// Pop the current screen to go back
+Navigator.pop(
+context
+);
+```
 
 ### Data Handling & Serialization
 
@@ -176,28 +438,116 @@ ValueListenableBuilder<int>(
 
 ### Logging
 
-- Use the `log` function from `dart:developer` for structured logging that
-  integrates with Dart DevTools.
+- Use the custom logging setup from the `/logging` directory with Riverpod integration.
+- The logging service is provided through `loggingServiceProvider` and includes provider
+  observability.
+- Global crash handling is configured in the bootstrap process.
 
-  ```dart
-  import 'dart:developer' as developer;
+#### Basic Usage
 
-  // For simple messages
-  developer.log('User logged in successfully.');
+```dart
+// Import the logging service
+import 'package:your_app/logging/logging.dart';
 
-  // For structured error logging
-  try {
-    // ... code that might fail
-  } catch (e, s) {
-    developer.log(
-      'Failed to fetch data',
-      name: 'myapp.network',
-      level: 1000, // SEVERE
-      error: e,
-      stackTrace: s,
-    );
+class MyWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loggingService = ref.read(loggingServiceProvider);
+
+    // Log information
+    loggingService.i('User action performed');
+
+    // Log warnings
+    await loggingService.w('Warning message');
+
+    // Log errors with context
+    try {
+      // risky operation
+    } catch (e, stackTrace) {
+      await loggingService.e(
+        'Operation failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return YourWidget();
   }
-  ```
+}
+```
+
+#### Extension Usage
+
+```dart
+// Use the LogX extension for quick debugging
+final userData = {'name': 'John', 'age': 30};
+userData.log
+(); // Logs the object using Logger().d()
+
+// Any object can use the extension
+'
+Simple string message
+'
+.
+
+log();
+complexObject.log
+();
+```
+
+#### Provider Observability
+
+- All provider lifecycle events are automatically logged through `ProviderLogger`
+- Provider additions, updates, disposals, and failures are tracked
+- Logs include provider names, values, and context information
+- Set up during bootstrap with `ProviderScope` observers
+
+#### Bootstrap Setup
+
+```dart
+Future<void> bootstrap() async {
+  // Initialize Logging
+  final logger = Logger();
+  final loggingService = LoggingService(logger: logger);
+  final providerObserver = ProviderLogger(logger);
+
+  // Global crash handling
+  FlutterError.onError = (errorDetails) async {
+    await loggingService.e(
+      'Crash occurred',
+      error: errorDetails.exception,
+      stackTrace: errorDetails.stack,
+    );
+
+    FlutterError.presentError(errorDetails);
+  };
+
+  runApp(
+    ProviderScope(
+      observers: [providerObserver],
+      overrides: [
+        loggingServiceProvider.overrideWithValue(loggingService),
+        // ... other service overrides
+      ],
+      child: const App(),
+    ),
+  );
+}
+```
+
+#### Crash Handling
+
+- Global Flutter crashes are captured via `FlutterError.onError`
+- Crashes are logged with full error details and stack traces
+- Error presentation is maintained while ensuring logging occurs
+- Integrates seamlessly with your existing logging service
+
+#### Service Methods
+
+- `i()` - Information logging
+- `w()` - Warning logging (async)
+- `e()` - Error logging (async)
+- All methods support optional `error` and `stackTrace` parameters
 
 ## Error Handling
 

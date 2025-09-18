@@ -11,6 +11,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   custom_charts:
     path: packages/custom_charts
+  dio: ^5.9.0
+  dio_cache_interceptor: ^4.0.3
   fl_chart: ^1.1.0
   flex_color_scheme: ^8.2.0
   flutter:
@@ -23,7 +25,9 @@ dependencies:
   gap: ^3.0.1
   google_fonts: ^6.3.1
   http: ^1.5.0
+  http_cache_hive_store: ^5.0.1
   intl: ^0.20.2
+  json_annotation: ^4.9.0
   logger: ^2.6.1
   melos: ^6.3.3
   package_info_plus: ^9.0.0
@@ -40,6 +44,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
+  json_serializable: ^6.11.1
   mocktail: ^1.0.4
   riverpod_generator: ^3.0.0
   very_good_analysis: ^9.0.0
