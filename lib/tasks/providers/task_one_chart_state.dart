@@ -18,6 +18,23 @@ class TaskOneChartState extends Equatable {
     required this.errorIsNotFound,
   });
 
+  factory TaskOneChartState.initial() {
+    return const TaskOneChartState(
+      start: null,
+      end: null,
+      selectedSeriesNames: [],
+      availableSeriesNames: [],
+      totalPowerResponse: null,
+      priceResponse: null,
+      isLoading: false,
+      error: null,
+      selectedCountry: 'de',
+      selectedMetric: 'total_power',
+      selectedBzn: 'NL',
+      errorIsNotFound: false,
+    );
+  }
+
   final DateTime? start;
   final DateTime? end;
   final List<String> selectedSeriesNames;
@@ -63,33 +80,17 @@ class TaskOneChartState extends Equatable {
 
   @override
   List<Object?> get props => [
-        start,
-        end,
-        selectedSeriesNames,
-        availableSeriesNames,
-        totalPowerResponse,
-        priceResponse,
-        isLoading,
-        error,
-        selectedCountry,
-        selectedMetric,
-        selectedBzn,
-        errorIsNotFound,
-      ];
-
-  static TaskOneChartState initial({String defaultCountry = 'de', String defaultBzn = 'NL'}) =>
-      TaskOneChartState(
-        start: null,
-        end: null,
-        selectedSeriesNames: const [],
-        availableSeriesNames: const [],
-        totalPowerResponse: null,
-        priceResponse: null,
-        isLoading: false,
-        error: null,
-        selectedCountry: defaultCountry,
-        selectedMetric: 'total_power',
-        selectedBzn: defaultBzn,
-        errorIsNotFound: false,
-      );
+    start,
+    end,
+    selectedSeriesNames,
+    availableSeriesNames,
+    totalPowerResponse,
+    priceResponse,
+    isLoading,
+    error,
+    selectedCountry,
+    selectedMetric,
+    selectedBzn,
+    errorIsNotFound,
+  ];
 }

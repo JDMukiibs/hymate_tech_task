@@ -80,15 +80,16 @@ decisions.
         * For `total_power` metric, for some production types particularly "Hydro Pumped Storage
           consumption" and "Cross border electricity trading",
           negative values are possible and should be displayed as-is.
+    * Task Two:
     * [e.g., "Assumed the target environment would be desktop/web, prioritizing responsive layout over mobile-specific gestures."]
 * **Limitations:**
     * [e.g., "Currently, data refresh is manual; no real-time updates implemented."]
     * [e.g., "Error handling is basic for network requests."]
     * [e.g., "No extensive unit/integration tests are included due to time constraints."]
 * **Extra Work Done:**
-    * [e.g., "Implemented a custom theme to match a specific brand guide."]
-    * [e.g., "Created a reusable chart component that can be easily extended."]
+    * Implemented a custom theme to match a specific brand guide.
     * Designed a custom 404 error page
+    * Created a custom package for charting with support from an LLM.
 
 ---
 
@@ -97,11 +98,11 @@ decisions.
 For your reference, here's an estimate of time spent on key tasks:
 
 * **Project Setup & Environment Configuration:** `2.5 hours`
-* **Core Chart Implementation:** `7.5 hours*`
-* **Data Integration (Mock/API):** `2.5 hours`
-* **UI/UX (Layout, Styling, Responsiveness):** `[e.g., 4 hours]`
+* **Core Chart Implementation:** `9 hours*`
+* **Data Integration (Mock/API):** `6 hours`
+* **UI/UX (Layout, Styling, Responsiveness):** `2.5 hours`
 * **Error Handling & Edge Cases:** `1 hour*`
-* **README Documentation:** `0.5 hours*`
+* **README Documentation:** `0.8 hours*`
 * **Total Estimated Time:** `[e.g., 16.5 hours]`
 
 ---
@@ -130,3 +131,53 @@ These widgets are small and intentionally focused on a single responsibility to 
 and testability. They are exported via `lib/tasks/widgets/widgets.dart`.
 
 ---
+
+## 🧪 Performance tests (parsing) -- Copilot
+
+A set of performance-focused tests live under `test/perf/parse_performance_test.dart`. These tests measure
+how long it takes to parse large JSON responses into the project's `DatapointHierarchyNode` model. They
+are separated from the fast unit tests so you can run them manually when you want reliable timing data.
+
+What is measured
+- jsonDecode (string -> Map/List) time.
+- The generated `fromJson` model mapping time (Map -> `DatapointHierarchyNode`).
+
+Test characteristics
+- Each test runs a small warm-up phase to stabilize JIT/VM behavior.
+- Each measurement runs multiple iterations and reports median and average timings to reduce noise.
+- Timings are printed in human-friendly units (milliseconds/ms or seconds/s) for easier interpretation.
+
+Included benchmarks
+- Depth benchmark: measures parsing when JSON is very deep (single chain of nested children). Useful to
+  check stack/recursion and per-node parsing costs.
+- Width benchmark: measures parsing when JSON has many sibling nodes at one level (wide trees). Useful to
+  check the impact of large payload sizes and many sibling objects.
+
+How to run (Windows cmd.exe)
+- Run only the performance tests (recommended):
+
+```cmd
+flutter test test\perf\parse_performance_test.dart -r expanded
+```
+
+- Run a single test file (same as above) or the whole test suite if you prefer.
+
+Interpreting the outputs
+- Each benchmark prints median and average timings for both the decode and fromJson stages.
+- Timings are printed as either `XXX.X ms` or `Y.YYY s` depending on magnitude.
+- Prefer the median for stability (less sensitive to outliers). You can use the average to understand total
+  runtime across iterations.
+
+Recommendations
+- Run these perf tests on the same machine/environment when comparing results to avoid cross-machine variance.
+- Run them manually (they are under `test/perf/`) rather than as part of CI unless you want a performance
+  gating policy (in which case choose conservative thresholds).
+
+Example output (abbreviated)
+- Depth 100 decode median=1.2 ms avg=1.4 ms
+- Depth 100 fromJson median=0.12 ms avg=0.14 ms
+- Width 200 decode median=0.20 ms avg=0.19 ms
+- Width 200 fromJson median=0.06 ms avg=0.06 ms
+
+---
+

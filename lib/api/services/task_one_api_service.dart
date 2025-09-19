@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:hymate_tech_task/api/api_client/api_client.dart';
 import 'package:hymate_tech_task/api/exceptions/hymate_tech_task_exception.dart';
 import 'package:hymate_tech_task/api/models/models.dart';
@@ -32,6 +31,8 @@ class TaskOneApiService extends _TaskOneApiService implements TaskOneApiServiceI
   static const String _totalPowerEndpoint = 'total_power';
   static const String _priceEndpoint = 'price';
 
+  // TODO(Joshua): getTotalPower keeps failing with 422 from the API, need to investigate further.
+  // TODO(Joshua): Also I think I should be able to put total power and price in the same  chart  I think
   @override
   Future<TotalPowerResponse> getTotalPower({
     required TotalPowerRequest request,

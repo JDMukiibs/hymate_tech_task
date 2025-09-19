@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hymate_tech_task/l10n/l10n.dart';
 import 'package:hymate_tech_task/shared/app_bar/default_app_bar.dart';
+import 'package:hymate_tech_task/tasks/tasks.dart';
 
 @RoutePage()
 class TaskTwoPage extends StatelessWidget {
@@ -13,8 +14,8 @@ class TaskTwoPage extends StatelessWidget {
       appBar: DefaultAppBar(
         title: context.l10n.taskTwoPageAppBarTitle,
       ),
-      body: Center(
-        child: Text(context.l10n.taskTwoPagePlaceholderMessage),
+      body: const Center(
+        child: TaskTwoView(),
       ),
     );
   }

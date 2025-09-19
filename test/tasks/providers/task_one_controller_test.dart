@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hymate_tech_task/api/models/models.dart';
-import 'package:hymate_tech_task/api/providers/task_one_api_service_provider.dart';
-import 'package:hymate_tech_task/api/services/task_one_api_service.dart';
+import 'package:hymate_tech_task/api/api.dart';
 import 'package:hymate_tech_task/tasks/tasks.dart';
 
 class FakeTaskOneApi implements TaskOneApiServiceInterface {

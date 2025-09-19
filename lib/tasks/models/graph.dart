@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hymate_tech_task/api/api.dart';
+import 'package:hymate_tech_task/tasks/models/models.dart';
 
 /// Represents a single series of data to be plotted on a graph.
 ///
