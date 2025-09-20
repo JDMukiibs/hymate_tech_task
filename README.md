@@ -131,11 +131,11 @@ For your reference, here's an estimate of time spent on key tasks:
 
 * **Project Setup & Environment Configuration:** `2.5 hours`
 * **Core Chart Implementation:** `7 hours`
-* **Data Integration (Mock/API):** `8 hours`
-* **UI/UX (Layout, Styling, Responsiveness):** `10 hours`
+* **Data Integration (Mock/API):** `13 hours`
+* **UI/UX (Layout, Styling, Responsiveness):** `15 hours`
 * **Error Handling & Edge Cases:** `2 hours`
 * **README Documentation:** `1 hour`
-* **Total Estimated Time:** `36 hours`
+* **Total Estimated Time:** `40.5 hours`
 
 ---
 
