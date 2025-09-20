@@ -35,7 +35,7 @@ You can find your current versions by running `flutter --version` in your termin
 
 ---
 
-## Screenshots
+## Screenshots / Video of the Implementation
 
 | Task 1                        | Task 2                        |
 |-------------------------------|-------------------------------|
@@ -66,6 +66,9 @@ decisions.
       between multiple series, legends, and axes.
     * `flutter_riverpod`: For state management and dependency injection.
     * `dio`: For making network requests to fetch data.
+    * `dio_cache_interceptor`: For caching network responses.
+    * `json_serializable`: For JSON parsing and model generation.
+    * `reactive_forms`: For managing form state and validation.
 
 * **Data Handling:**
     * Task One uses an api service to fetch data from the given data source:
@@ -95,6 +98,13 @@ decisions.
       needed for a production app.
     * Ensuring different colors are used for different hierarchical levels in the chart is not
       implemented.
+    * In Task One, I had to make some assumptions about how to handle missing data points
+      (e.g., gaps in time series) and how to aggregate data for different time ranges (e.g., daily,
+      weekly).
+    * In Task One, some requests are not being made with the correctly set input parameters for
+      bidding zone and country. And so at times, the intended request fails or returns a previous
+      request's data and not the intended one. The problem is mainly with my reactive form setup
+      that I couldn't debug in time.
     * The charting package is basic and may not cover all edge cases or advanced features found in
       mature charting libraries.
     * The UI is designed primarily for desktop and web; mobile support is not fully optimized.
@@ -110,6 +120,8 @@ decisions.
     * Setup linting and formatting rules for consistent code style.
     * Setup localization support using `flutter_localizations` package. (German mostly Gemini
       translation)
+    * Setup app_prefernces so that user selections (language, theme*) are persisted across app
+      restarts.
 
 ---
 

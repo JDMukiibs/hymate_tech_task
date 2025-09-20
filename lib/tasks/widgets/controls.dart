@@ -77,7 +77,9 @@ class Controls extends ConsumerWidget {
                               width: 60,
                               child: Text(
                                 context.l10n.selectMetricsLabel,
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -140,6 +142,35 @@ class Controls extends ConsumerWidget {
                                       items: TaskConstants
                                           .availableBiddingZones
                                           .entries
+                                          .map(
+                                            (entry) => DropdownMenuItem<String>(
+                                              value: entry.key,
+                                              child: Text(entry.value),
+                                            ),
+                                          )
+                                          .toList(),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                      ),
+                                    )
+                                  : ref
+                                            .read(
+                                              taskOneControllerProvider
+                                                  .notifier,
+                                            )
+                                            .selectedMetric ==
+                                        'total_power'
+                                  ? ReactiveDropdownField<String>(
+                                      formControlName: 'country',
+                                      items: TaskConstants
+                                          .availableCountries
+                                          .entries
+                                          .where((entry) => entry.key == 'de')
+                                          /// Only Germany has total_power data
                                           .map(
                                             (entry) => DropdownMenuItem<String>(
                                               value: entry.key,

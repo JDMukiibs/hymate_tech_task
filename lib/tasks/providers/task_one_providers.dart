@@ -5,9 +5,9 @@ import 'package:hymate_tech_task/tasks/tasks.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 final taskOneControllerProvider =
-AsyncNotifierProvider<TaskOneController, TaskOneChartState>(
-  TaskOneController.new,
-);
+    AsyncNotifierProvider<TaskOneController, TaskOneChartState>(
+      TaskOneController.new,
+    );
 
 class TaskOneController extends AsyncNotifier<TaskOneChartState> {
   late final FormGroup formGroup;
@@ -38,46 +38,32 @@ class TaskOneController extends AsyncNotifier<TaskOneChartState> {
     });
 
     // Listen to metric changes to trigger data fetching
-    formGroup
-        .control('metric')
-        .valueChanges
-        .listen((_) => _onMetricChange());
-    formGroup
-        .control('country')
-        .valueChanges
-        .listen((_) => _onCountryChange());
-    formGroup
-        .control('bzn')
-        .valueChanges
-        .listen((_) => _onBznChange());
+    formGroup.control('metric').valueChanges.listen((_) => _onMetricChange());
+    formGroup.control('country').valueChanges.listen((_) => _onCountryChange());
+    formGroup.control('bzn').valueChanges.listen((_) => _onBznChange());
   }
 
-  String get selectedMetric =>
-      formGroup
-          .control('metric')
-          .value as String;
+  String get selectedMetric => formGroup.control('metric').value as String;
 
-  String get selectedCountry =>
-      formGroup
-          .control('country')
-          .value as String;
+  String get selectedCountry => formGroup.control('country').value as String;
 
-  String get selectedBzn =>
-      formGroup
-          .control('bzn')
-          .value as String;
+  String get selectedBzn => formGroup.control('bzn').value as String;
 
-  DateTime? get startDate =>
-      formGroup
-          .control('startDate')
-          .value as DateTime?;
+  DateTime? get startDate => formGroup.control('startDate').value as DateTime?;
 
-  DateTime? get endDate =>
-      formGroup
-          .control('endDate')
-          .value as DateTime?;
+  DateTime? get endDate => formGroup.control('endDate').value as DateTime?;
 
-  bool get canFetchData => formGroup.valid && _hasValidDateRange();
+  bool get canFetchData {
+    final metric = selectedMetric;
+
+    if (metric == 'price') {
+      return formGroup.control('bzn').valid && _hasValidDateRange();
+    } else if (metric == 'solar_share' || metric == 'wind_onshore_share') {
+      return formGroup.control('country').valid;
+    } else {
+      return formGroup.control('country').valid && _hasValidDateRange();
+    }
+  }
 
   bool get hasChartData => state.value?.generatedChartData.isNotEmpty ?? false;
 
@@ -88,30 +74,20 @@ class TaskOneController extends AsyncNotifier<TaskOneChartState> {
   }
 
   Future<void> setMetric(String metric) async {
-    formGroup
-        .control('metric')
-        .value = metric;
+    formGroup.control('metric').value = metric;
   }
 
   Future<void> setCountry(String country) async {
-    formGroup
-        .control('country')
-        .value = country;
+    formGroup.control('country').value = country;
   }
 
   Future<void> setBzn(String bzn) async {
-    formGroup
-        .control('bzn')
-        .value = bzn;
+    formGroup.control('bzn').value = bzn;
   }
 
   Future<void> setDateRange(DateTime? start, DateTime? end) async {
-    formGroup
-        .control('startDate')
-        .value = start;
-    formGroup
-        .control('endDate')
-        .value = end;
+    formGroup.control('startDate').value = start;
+    formGroup.control('endDate').value = end;
   }
 
   void toggleSeriesSelection(String seriesName) {
@@ -156,18 +132,21 @@ class TaskOneController extends AsyncNotifier<TaskOneChartState> {
   void _syncFormWithState() {
     final currentState = state.value!;
     final seriesArray =
-    formGroup.control('selectedSeries') as FormArray<String>;
+        formGroup.control('selectedSeries') as FormArray<String>;
     seriesArray.value = currentState.selectedSeriesNames;
     formGroup.updateValueAndValidity();
   }
 
   void _onMetricChange() {
     final currentState = state.value!;
+
     /// Clear the legend so that previous selections don't persist across metrics
     state = AsyncValue.data(
-      currentState.copyWith(selectedSeriesNames: [],
+      currentState.copyWith(
+        selectedSeriesNames: [],
         availableSeriesNames: [],
-        assignedColors: {},),
+        assignedColors: {},
+      ),
     );
 
     if (canFetchData) {
@@ -176,15 +155,19 @@ class TaskOneController extends AsyncNotifier<TaskOneChartState> {
   }
 
   void _onCountryChange() {
-    if (canFetchData && (selectedMetric != 'price')) {
-      fetchData();
-    }
+    Future.microtask(() {
+      if (canFetchData && (selectedMetric != 'price')) {
+        fetchData();
+      }
+    });
   }
 
   void _onBznChange() {
-    if (canFetchData && selectedMetric == 'price') {
-      fetchData();
-    }
+    Future.microtask(() {
+      if (canFetchData && selectedMetric == 'price') {
+        fetchData();
+      }
+    });
   }
 
   Future<void> fetchData() async {
@@ -249,7 +232,8 @@ class TaskOneController extends AsyncNotifier<TaskOneChartState> {
   }
 
   Future<TotalPowerResponse> _fetchTotalPower(
-      TaskOneApiServiceInterface api,) async {
+    TaskOneApiServiceInterface api,
+  ) async {
     final request = TotalPowerRequest(
       country: selectedCountry,
       start: getUnixSeconds(startDate),
@@ -282,10 +266,8 @@ class TaskOneController extends AsyncNotifier<TaskOneChartState> {
     return state.value?.selectedSeriesNames.contains(seriesName) ?? false;
   }
 
-  String getUnixSeconds(DateTime? date) {
-    if (date == null) return '';
-    return (date
-        .toUtc()
-        .millisecondsSinceEpoch ~/ 1000).toString();
+  String? getUnixSeconds(DateTime? date) {
+    if (date == null) return null;
+    return (date.toUtc().millisecondsSinceEpoch ~/ 1000).toString();
   }
 }
