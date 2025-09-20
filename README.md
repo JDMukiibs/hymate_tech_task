@@ -35,6 +35,14 @@ You can find your current versions by running `flutter --version` in your termin
 
 ---
 
+## Screenshots
+
+| Task 1                        | Task 2                        |
+|-------------------------------|-------------------------------|
+| ![task_one.png](task_one.png) | ![task_two.png](task_two.png) |
+
+---
+
 ## 📝 Small Description of the Implementation
 
 This section provides a high-level overview of how the application is structured and key technical
@@ -85,6 +93,8 @@ decisions.
     * A mem cache is what is used for the caching layer, which means that data is lost when the app
       is restarted. A more robust caching solution (e.g., local database or file storage) would be
       needed for a production app.
+    * Ensuring different colors are used for different hierarchical levels in the chart is not
+      implemented.
     * The charting package is basic and may not cover all edge cases or advanced features found in
       mature charting libraries.
     * The UI is designed primarily for desktop and web; mobile support is not fully optimized.
