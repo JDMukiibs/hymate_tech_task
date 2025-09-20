@@ -11,7 +11,7 @@ class SelectLanguagePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
+    final primaryColor = context.theme.colorScheme.primary;
 
     final currentLocale = ref.watch(localeProvider);
 

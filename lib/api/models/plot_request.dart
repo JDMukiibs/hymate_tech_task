@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hymate_tech_task/tasks/models/models.dart' show Plot;
 import 'package:json_annotation/json_annotation.dart';
 
@@ -44,6 +46,17 @@ class PlotRequest {
   final PlotRequestData data;
 
   Map<String, dynamic> toJson() => _$PlotRequestToJson(this);
+
+  @override
+  String toString() {
+    final jsonMap = toJson();
+
+    // Create a JsonEncoder with an indent for pretty printing
+    const encoder = JsonEncoder.withIndent('  '); // 2 spaces indent
+
+    // Encode the map to a formatted JSON string
+    return encoder.convert(jsonMap);
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -57,6 +70,9 @@ class PlotRequestData {
   final List<PlotRequestExtraData>? extra;
 
   Map<String, dynamic> toJson() => _$PlotRequestDataToJson(this);
+
+  @override
+  String toString() => json.encode(toJson());
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -75,4 +91,7 @@ class PlotRequestExtraData {
   final String label;
 
   Map<String, dynamic> toJson() => _$PlotRequestExtraDataToJson(this);
+
+  @override
+  String toString() => json.encode(toJson());
 }

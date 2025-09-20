@@ -163,6 +163,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to Task Two'**
   String get homePageNavigateToTaskTwoButtonText;
+
+  /// No description provided for @biddingZonesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bidding Zones'**
+  String get biddingZonesLabel;
+
+  /// No description provided for @countriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Countries'**
+  String get countriesLabel;
+
+  /// No description provided for @startDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get startDateLabel;
+
+  /// No description provided for @endDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get endDateLabel;
+
+  /// No description provided for @selectMetricsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Metrics'**
+  String get selectMetricsLabel;
+
+  /// No description provided for @fetchDataButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch Data'**
+  String get fetchDataButtonLabel;
+
+  /// No description provided for @generatePlotButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Plot'**
+  String get generatePlotButtonLabel;
+
+  /// No description provided for @noDataMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available for the selected options.'**
+  String get noDataMessage;
+
+  /// No description provided for @selectAtLeastOneMetricMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one metric.'**
+  String get selectAtLeastOneMetricMessage;
+
+  /// No description provided for @fetchingDataMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching data...'**
+  String get fetchingDataMessage;
+
+  /// No description provided for @errorFetchingDataMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error fetching data. Please try again.'**
+  String get errorFetchingDataMessage;
+
+  /// Title for the generated plot request panel
+  ///
+  /// In en, this message translates to:
+  /// **'Generated Plot Request'**
+  String get generatedPlotRequestTitle;
+
+  /// Shown when no plot has been generated yet
+  ///
+  /// In en, this message translates to:
+  /// **'No plot generated yet. Select datapoints and click \"Generate Plot\".'**
+  String get noPlotGeneratedMessage;
+
+  /// Error message when generating plot fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating plot: {error}'**
+  String errorGeneratingPlotMessage(Object error);
+
+  /// Shown when datapoints fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data: {error}'**
+  String errorLoadingDataMessage(Object error);
+
+  /// Label for the datapoints hierarchy section
+  ///
+  /// In en, this message translates to:
+  /// **'Data Points'**
+  String get datapointsLabel;
+
+  /// Validation message shown when form is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid form'**
+  String get invalidFormMessage;
+
+  /// Validation message shown when date range is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date range'**
+  String get invalidDateRangeMessage;
+
+  /// Label for the data series section
+  ///
+  /// In en, this message translates to:
+  /// **'Data Series'**
+  String get dataSeriesLabel;
+
+  /// Button text to clear selected datapoints
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Selections'**
+  String get clearSelectionsButtonText;
+
+  /// Button text used to retry an operation
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryButtonText;
+
+  /// Label for showing the legend toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Show Legend'**
+  String get showLegendLabel;
+
+  /// Label showing application version
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String appVersionLabel(Object version);
+
+  /// Shown when API returns a not found for requested data
+  ///
+  /// In en, this message translates to:
+  /// **'The requested data was not found. Please check your selections.'**
+  String get requestedDataNotFoundMessage;
+
+  /// Shown when API returns a validation error
+  ///
+  /// In en, this message translates to:
+  /// **'There was an issue with your request. Please check your inputs.'**
+  String get validationErrorMessage;
+
+  /// Shown when a server error occurs while fetching data
+  ///
+  /// In en, this message translates to:
+  /// **'A server error occurred while fetching data. Please try again.'**
+  String get serverErrorMessage;
+
+  /// Generic unexpected error shown to the user
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred. Please try again.'**
+  String get unexpectedErrorMessage;
+
+  /// Fallback unknown error message
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred.'**
+  String get unknownErrorMessage;
+
+  /// Title for the chart legend modal
+  ///
+  /// In en, this message translates to:
+  /// **'Chart Legend'**
+  String get chartLegendTitle;
+
+  /// Generic close button text
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButtonText;
 }
 
 class _AppLocalizationsDelegate

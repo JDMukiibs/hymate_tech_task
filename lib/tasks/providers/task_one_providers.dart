@@ -1,198 +1,291 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hymate_tech_task/api/api.dart';
-import 'package:hymate_tech_task/tasks/providers/providers.dart';
+import 'package:hymate_tech_task/tasks/tasks.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
-/// Controller/provider for Task One charting
-final NotifierProvider<TaskOneController, TaskOneChartState>
-taskOneControllerProvider =
-    NotifierProvider.autoDispose<TaskOneController, TaskOneChartState>(
-      TaskOneController.new,
-    );
+final taskOneControllerProvider =
+AsyncNotifierProvider<TaskOneController, TaskOneChartState>(
+  TaskOneController.new,
+);
 
-/// Controller that manages user selections and fetching data from the Task One API.
-class TaskOneController extends Notifier<TaskOneChartState> {
-  TaskOneController();
+class TaskOneController extends AsyncNotifier<TaskOneChartState> {
+  late final FormGroup formGroup;
 
   @override
-  TaskOneChartState build() {
-    // Schedule an initial fetch after the notifier is created
-    Future.microtask(() {
-      if (state.selectedMetric == 'price') {
-        fetchPrice(bzn: state.selectedBzn);
-      } else {
-        fetchData(country: state.selectedCountry);
-      }
-    });
+  Future<TaskOneChartState> build() async {
+    _initializeForm();
     return TaskOneChartState.initial();
   }
 
-  /// Set the metric to fetch: 'total_power' or 'price'
+  void _initializeForm() {
+    formGroup = FormGroup({
+      'metric': FormControl<String>(
+        value: 'total_power',
+        validators: [Validators.required],
+      ),
+      'country': FormControl<String>(
+        value: 'de',
+        validators: [Validators.required],
+      ),
+      'bzn': FormControl<String>(
+        value: 'NL',
+        validators: [Validators.required],
+      ),
+      'startDate': FormControl<DateTime>(),
+      'endDate': FormControl<DateTime>(),
+      'selectedSeries': FormArray<String>([]),
+    });
+
+    // Listen to metric changes to trigger data fetching
+    formGroup
+        .control('metric')
+        .valueChanges
+        .listen((_) => _onMetricChange());
+    formGroup
+        .control('country')
+        .valueChanges
+        .listen((_) => _onCountryChange());
+    formGroup
+        .control('bzn')
+        .valueChanges
+        .listen((_) => _onBznChange());
+  }
+
+  String get selectedMetric =>
+      formGroup
+          .control('metric')
+          .value as String;
+
+  String get selectedCountry =>
+      formGroup
+          .control('country')
+          .value as String;
+
+  String get selectedBzn =>
+      formGroup
+          .control('bzn')
+          .value as String;
+
+  DateTime? get startDate =>
+      formGroup
+          .control('startDate')
+          .value as DateTime?;
+
+  DateTime? get endDate =>
+      formGroup
+          .control('endDate')
+          .value as DateTime?;
+
+  bool get canFetchData => formGroup.valid && _hasValidDateRange();
+
+  bool get hasChartData => state.value?.generatedChartData.isNotEmpty ?? false;
+
+  bool _hasValidDateRange() {
+    final start = startDate;
+    final end = endDate;
+    return start == null || end == null || start.isBefore(end);
+  }
+
   Future<void> setMetric(String metric) async {
-    state = state.copyWith(selectedMetric: metric, errorIsNotFound: false);
-    if (metric == 'price') {
-      await fetchPrice(bzn: state.selectedBzn);
-    } else {
-      await fetchData(country: state.selectedCountry);
-    }
+    formGroup
+        .control('metric')
+        .value = metric;
   }
 
-  /// Set the bidding zone (bzn) for price and refresh
-  Future<void> setBzn(String bzn) async {
-    state = state.copyWith(selectedBzn: bzn, errorIsNotFound: false);
-    if (state.selectedMetric == 'price') {
-      await fetchPrice(bzn: bzn);
-    }
-  }
-
-  /// Set the country to use for API calls. When set, a fetch will be triggered to refresh data.
   Future<void> setCountry(String country) async {
-    state = state.copyWith(selectedCountry: country, errorIsNotFound: false);
-    if (state.selectedMetric == 'price') {
-      await fetchPrice(bzn: state.selectedBzn);
-    } else {
-      await fetchData(country: country);
-    }
+    formGroup
+        .control('country')
+        .value = country;
   }
 
-  /// Update selected time window (auto-fetches if a country is set)
-  Future<void> setTimeWindow(DateTime? start, DateTime? end) async {
-    state = state.copyWith(start: start, end: end, errorIsNotFound: false);
-    // Auto fetch using the currently selected metric
-    if (state.selectedMetric == 'price') {
-      await fetchPrice(bzn: state.selectedBzn);
-    } else {
-      await fetchData(country: state.selectedCountry);
-    }
+  Future<void> setBzn(String bzn) async {
+    formGroup
+        .control('bzn')
+        .value = bzn;
   }
 
-  /// Toggle a series selection by name (auto-fetches when selection changes)
-  Future<void> toggleSeriesSelection(String name) async {
-    final current = List<String>.from(state.selectedSeriesNames);
-    if (current.contains(name)) {
-      current.remove(name);
+  Future<void> setDateRange(DateTime? start, DateTime? end) async {
+    formGroup
+        .control('startDate')
+        .value = start;
+    formGroup
+        .control('endDate')
+        .value = end;
+  }
+
+  void toggleSeriesSelection(String seriesName) {
+    final currentState = state.value!;
+    final currentSelected = List<String>.from(currentState.selectedSeriesNames);
+
+    if (currentSelected.contains(seriesName)) {
+      currentSelected.remove(seriesName);
+      _removeColorAssignment(seriesName);
     } else {
-      current.add(name);
+      currentSelected.add(seriesName);
+      _assignColor(seriesName);
     }
-    state = state.copyWith(
-      selectedSeriesNames: current,
-      errorIsNotFound: false,
+
+    final newState = currentState.copyWith(
+      selectedSeriesNames: currentSelected,
+    );
+    state = AsyncValue.data(newState);
+    _syncFormWithState();
+  }
+
+  void _assignColor(String seriesName) {
+    final currentState = state.value!;
+    final newColors = Map<String, Color>.from(currentState.assignedColors);
+
+    if (!newColors.containsKey(seriesName)) {
+      newColors[seriesName] = ColorHelper.assignColorBasedOnHashCode(
+        seriesName,
+      );
+    }
+
+    state = AsyncValue.data(currentState.copyWith(assignedColors: newColors));
+  }
+
+  void _removeColorAssignment(String seriesName) {
+    final currentState = state.value!;
+    final newColors = Map<String, Color>.from(currentState.assignedColors);
+    newColors.remove(seriesName);
+    state = AsyncValue.data(currentState.copyWith(assignedColors: newColors));
+  }
+
+  void _syncFormWithState() {
+    final currentState = state.value!;
+    final seriesArray =
+    formGroup.control('selectedSeries') as FormArray<String>;
+    seriesArray.value = currentState.selectedSeriesNames;
+    formGroup.updateValueAndValidity();
+  }
+
+  void _onMetricChange() {
+    final currentState = state.value!;
+    /// Clear the legend so that previous selections don't persist across metrics
+    state = AsyncValue.data(
+      currentState.copyWith(selectedSeriesNames: [],
+        availableSeriesNames: [],
+        assignedColors: {},),
     );
 
-    // Auto fetch using the currently selected metric
-    if (state.selectedMetric == 'price') {
-      await fetchPrice(bzn: state.selectedBzn);
-    } else {
-      await fetchData(country: state.selectedCountry);
+    if (canFetchData) {
+      fetchData();
     }
   }
 
-  /// Manual chart update: fetches data from API using current time window and updates state
-  Future<void> fetchData({required String country}) async {
-    // Prevent overlapping requests if already loading
-    if (state.isLoading) return;
-
-    state = state.copyWith(isLoading: true, errorIsNotFound: false);
-
-    try {
-      final api = ref.read(taskOneApiServiceProvider);
-
-      final req = TotalPowerRequest(
-        country: country,
-        start: state.start?.millisecondsSinceEpoch.toString(),
-        end: state.end?.millisecondsSinceEpoch.toString(),
-      );
-
-      final response = await api.getTotalPower(request: req);
-
-      // If the provider was disposed while awaiting, avoid updating state
-      if (!ref.mounted) return;
-
-      // If no available names set, populate
-      final names = response.productionTypes
-          .map<String>((e) => e.name)
-          .toList();
-
-      state = state.copyWith(
-        totalPowerResponse: response,
-        availableSeriesNames: names,
-        // keep selected as-is unless empty, then select all
-        selectedSeriesNames: state.selectedSeriesNames.isEmpty
-            ? List<String>.from(names)
-            : state.selectedSeriesNames,
-        isLoading: false,
-        selectedCountry: country,
-      );
-    } on HymateTechTaskNotFoundException catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message ?? 'Not found',
-        errorIsNotFound: true,
-      );
-    } on HymateTechTaskValidationErrorException catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message ?? 'Validation failed',
-      );
-    } on HymateTechTaskException catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message ?? 'Server error',
-      );
-    } catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(isLoading: false, error: e.toString());
+  void _onCountryChange() {
+    if (canFetchData && (selectedMetric != 'price')) {
+      fetchData();
     }
   }
 
-  /// Fetch price data using the price endpoint
-  Future<void> fetchPrice({required String bzn}) async {
+  void _onBznChange() {
+    if (canFetchData && selectedMetric == 'price') {
+      fetchData();
+    }
+  }
+
+  Future<void> fetchData() async {
     if (state.isLoading) return;
 
-    state = state.copyWith(isLoading: true, errorIsNotFound: false);
+    state = const AsyncValue.loading();
 
-    try {
+    state = await AsyncValue.guard(() async {
       final api = ref.read(taskOneApiServiceProvider);
+      final currentState = state.value ?? TaskOneChartState.initial();
 
-      final req = PriceRequest(
-        bzn: bzn,
-        start: state.start?.millisecondsSinceEpoch.toString(),
-        end: state.end?.millisecondsSinceEpoch.toString(),
-      );
+      switch (selectedMetric) {
+        case 'total_power':
+          final response = await _fetchTotalPower(api);
+          final seriesNames = response.productionTypes
+              .map((e) => e.name)
+              .toList();
+          return currentState.copyWith(
+            totalPowerResponse: response,
+            availableSeriesNames: seriesNames,
+            selectedSeriesNames: currentState.selectedSeriesNames.isEmpty
+                ? seriesNames
+                : currentState.selectedSeriesNames,
+          );
 
-      final response = await api.getPrice(request: req);
+        case 'price':
+          final response = await _fetchPrice(api);
+          return currentState.copyWith(
+            priceResponse: response,
+            availableSeriesNames: ['Price (${response.unit})'],
+            selectedSeriesNames: ['Price (${response.unit})'],
+          );
 
-      if (!ref.mounted) return;
+        case 'solar_share':
+          final response = await api.getSolarShare(country: selectedCountry);
+          final seriesName = 'Solar Share (${response.unit})';
+          return currentState.copyWith(
+            solarShareResponse: response,
+            availableSeriesNames: [seriesName],
+            selectedSeriesNames: [seriesName],
+          );
 
-      state = state.copyWith(
-        priceResponse: response,
-        isLoading: false,
-        selectedBzn: bzn,
-      );
-    } on HymateTechTaskNotFoundException catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message ?? 'Not found',
-        errorIsNotFound: true,
-      );
-    } on HymateTechTaskValidationErrorException catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message ?? 'Validation failed',
-      );
-    } on HymateTechTaskException catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message ?? 'Server error',
-      );
-    } catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(isLoading: false, error: e.toString());
+        case 'wind_onshore_share':
+          final response = await api.getWindOnshoreShare(
+            country: selectedCountry,
+          );
+          final seriesName = 'Wind Onshore Share (${response.unit})';
+          return currentState.copyWith(
+            windOnshoreShareResponse: response,
+            availableSeriesNames: [seriesName],
+            selectedSeriesNames: [seriesName],
+          );
+
+        default:
+          throw Exception('Unknown metric: $selectedMetric');
+      }
+    });
+
+    if (state.hasValue) {
+      _syncFormWithState();
     }
+  }
+
+  Future<TotalPowerResponse> _fetchTotalPower(
+      TaskOneApiServiceInterface api,) async {
+    final request = TotalPowerRequest(
+      country: selectedCountry,
+      start: getUnixSeconds(startDate),
+      end: getUnixSeconds(endDate),
+    );
+    return api.getTotalPower(request: request);
+  }
+
+  Future<PriceResponse> _fetchPrice(TaskOneApiServiceInterface api) async {
+    final request = PriceRequest(
+      bzn: selectedBzn,
+      start: getUnixSeconds(startDate),
+      end: getUnixSeconds(endDate),
+    );
+    return api.getPrice(request: request);
+  }
+
+  void clearSelections() {
+    final currentState = state.value!;
+    state = AsyncValue.data(
+      currentState.copyWith(
+        selectedSeriesNames: [],
+        assignedColors: {},
+      ),
+    );
+    _syncFormWithState();
+  }
+
+  bool isSeriesSelected(String seriesName) {
+    return state.value?.selectedSeriesNames.contains(seriesName) ?? false;
+  }
+
+  String getUnixSeconds(DateTime? date) {
+    if (date == null) return '';
+    return (date
+        .toUtc()
+        .millisecondsSinceEpoch ~/ 1000).toString();
   }
 }

@@ -43,5 +43,87 @@
   "homePageNavigateToTaskTwoButtonText": "Go to Task Two",
   "@homePageNavigateToTaskTwoButtonText": {
     "description": "Text for the navigation button to Task Two on the Home Page"
-  }
+  },
+  "biddingZonesLabel": "Bidding Zones",
+  "countriesLabel": "Countries",
+  "startDateLabel": "Start Date",
+  "endDateLabel": "End Date",
+  "selectMetricsLabel": "Select Metrics",
+  "fetchDataButtonLabel": "Fetch Data",
+  "generatePlotButtonLabel": "Generate Plot",
+  "noDataMessage": "No data available for the selected options.",
+  "selectAtLeastOneMetricMessage": "Please select at least one metric.",
+  "fetchingDataMessage": "Fetching data...",
+  "errorFetchingDataMessage": "Error fetching data. Please try again.",
+  "generatedPlotRequestTitle": "Generated Plot Request",
+  "@generatedPlotRequestTitle": {
+    "description": "Title for the generated plot request panel"
+  },
+  "noPlotGeneratedMessage": "No plot generated yet. Select datapoints and click \"Generate Plot\".",
+  "@noPlotGeneratedMessage": {
+    "description": "Shown when no plot has been generated yet"
+  },
+  "errorGeneratingPlotMessage": "Error generating plot: {error}",
+  "@errorGeneratingPlotMessage": {
+    "description": "Error message when generating plot fails",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorLoadingDataMessage": "Error loading data: {error}",
+  "@errorLoadingDataMessage": {
+    "description": "Shown when datapoints fail to load",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "datapointsLabel": "Data Points",
+  "@datapointsLabel": {
+    "description": "Label for the datapoints hierarchy section"
+  },
+  "invalidFormMessage": "Invalid form",
+  "@invalidFormMessage": {
+    "description": "Validation message shown when form is invalid"
+  },
+  "invalidDateRangeMessage": "Invalid date range",
+  "@invalidDateRangeMessage": {
+    "description": "Validation message shown when date range is invalid"
+  },
+  "dataSeriesLabel": "Data Series",
+  "@dataSeriesLabel": {
+    "description": "Label for the data series section"
+  },
+  "clearSelectionsButtonText": "Clear Selections",
+  "@clearSelectionsButtonText": {
+    "description": "Button text to clear selected datapoints"
+  },
+  "retryButtonText": "Retry",
+  "@retryButtonText": {
+    "description": "Button text used to retry an operation"
+  },
+  "showLegendLabel": "Show Legend",
+  "@showLegendLabel": {
+    "description": "Label for showing the legend toggle"
+  },
+  "appVersionLabel": "Version {version}",
+  "@appVersionLabel": {
+    "description": "Label showing application version",
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "requestedDataNotFoundMessage": "The requested data was not found. Please check your selections.",
+  "@requestedDataNotFoundMessage": { "description": "Shown when API returns a not found for requested data" },
+  "validationErrorMessage": "There was an issue with your request. Please check your inputs.",
+  "@validationErrorMessage": { "description": "Shown when API returns a validation error" },
+  "serverErrorMessage": "A server error occurred while fetching data. Please try again.",
+  "@serverErrorMessage": { "description": "Shown when a server error occurs while fetching data" },
+  "unexpectedErrorMessage": "An unexpected error occurred. Please try again.",
+  "@unexpectedErrorMessage": { "description": "Generic unexpected error shown to the user" },
+  "unknownErrorMessage": "An unknown error occurred.",
+  "@unknownErrorMessage": { "description": "Fallback unknown error message" },
+  "chartLegendTitle": "Chart Legend",
+  "@chartLegendTitle": { "description": "Title for the chart legend modal" },
+  "closeButtonText": "Close",
+  "@closeButtonText": { "description": "Generic close button text" }
 }

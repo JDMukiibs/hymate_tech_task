@@ -1,181 +1,218 @@
+import 'dart:math' as math;
+
 import 'package:custom_charts/custom_charts.dart';
 import 'package:flutter/material.dart';
-import 'package:hymate_tech_task/shared/error/custom_error_widget.dart';
-import 'package:hymate_tech_task/shared/layout/layout.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hymate_tech_task/api/models/models.dart';
 import 'package:hymate_tech_task/tasks/tasks.dart';
 
-typedef OnToggleSeries = void Function(String name);
-
-/// Chart area + legend widget extracted from the original view.
-/// Delegates retry and series toggles to the parent.
-class ChartWithLegend extends StatelessWidget {
+class ChartWithLegend extends ConsumerWidget {
   const ChartWithLegend({
     required this.state,
-    required this.onToggleSeries,
-    required this.onRetry,
+    required this.selectedMetric,
     super.key,
   });
 
   final TaskOneChartState state;
-  final OnToggleSeries onToggleSeries;
-  final VoidCallback onRetry;
+  final String selectedMetric;
 
   @override
-  Widget build(BuildContext context) {
-    if (state.isLoading) {
-      return const KeyedSubtree(
-        key: ValueKey('loading'),
-        child: Center(child: CircularProgressIndicator()),
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!_hasAnyData()) {
+      return const EmptyChartState();
+    }
+
+    // Check for specific renewable data issues
+    if (selectedMetric == 'solar_share' &&
+        state.solarShareResponse != null &&
+        !_hasValidRenewableData(state.solarShareResponse!)) {
+      return const NoValidRenewableDataWidget(metricName: 'Solar Share');
+    }
+
+    if (selectedMetric == 'wind_onshore_share' &&
+        state.windOnshoreShareResponse != null &&
+        !_hasValidRenewableData(state.windOnshoreShareResponse!)) {
+      return const NoValidRenewableDataWidget(metricName: 'Wind Onshore Share');
+    }
+
+    final seriesList = _buildSeriesList();
+
+    if (seriesList.isEmpty) {
+      return const NoDataAvailableWidget();
+    }
+
+    final visibleSeries = _getVisibleSeries(seriesList);
+
+    if (visibleSeries.isEmpty) {
+      return const NoSeriesSelectedWidget();
+    }
+
+    return ChartDisplay(
+      series: visibleSeries,
+      allSeries: seriesList,
+      selectedNames: state.selectedSeriesNames,
+      dataKey: _getDataKey(),
+    );
+  }
+
+  bool _hasValidRenewableData(RenewableShareResponse response) {
+    return response.data.any((value) => value != null && value > 0);
+  }
+
+  bool _hasAnyData() {
+    return state.totalPowerResponse != null ||
+        state.priceResponse != null ||
+        state.solarShareResponse != null ||
+        state.windOnshoreShareResponse != null;
+  }
+
+  List<ChartSeries> _buildSeriesList() {
+    final seriesList = <ChartSeries>[];
+
+    final totalPowerResp = state.totalPowerResponse;
+    if (totalPowerResp != null) {
+      seriesList.addAll(_buildTotalPowerSeries(totalPowerResp));
+    }
+
+    final priceResp = state.priceResponse;
+    if (priceResp != null) {
+      seriesList.addAll(_buildPriceSeries(priceResp));
+    }
+
+    final solarShareResp = state.solarShareResponse;
+    if (solarShareResp != null && _hasValidRenewableData(solarShareResp)) {
+      seriesList.addAll(
+        _buildRenewableSeries(
+          solarShareResp,
+          'Solar Share',
+        ),
       );
     }
 
-    if (state.errorIsNotFound) {
-      return CustomErrorWidget(
-        message: state.error ?? 'Not found',
-        onPressed: () async {
-          onRetry.call();
-        },
+    final windOnshoreShareResp = state.windOnshoreShareResponse;
+    if (windOnshoreShareResp != null &&
+        _hasValidRenewableData(windOnshoreShareResp)) {
+      seriesList.addAll(
+        _buildRenewableSeries(
+          windOnshoreShareResp,
+          'Wind Onshore Share',
+        ),
       );
     }
 
-    // Handle price and total_power separately so types are known to the analyzer
-    if (state.selectedMetric == 'price') {
-      final pResp = state.priceResponse;
-      if (pResp == null) {
-        return const KeyedSubtree(
-          key: ValueKey('empty'),
-          child: Center(
-            child: Text('No data. Pick a range and press Update Chart.'),
-          ),
-        );
-      }
+    return seriesList;
+  }
 
-      final unixSeconds = pResp.unixSeconds;
-      final seriesList = <ChartSeries>[];
+  List<ChartSeries> _buildTotalPowerSeries(TotalPowerResponse response) {
+    final seriesList = <ChartSeries>[];
+    final unixSeconds = response.unixSeconds;
+
+    for (var i = 0; i < response.productionTypes.length; i++) {
+      final productionType = response.productionTypes[i];
       final points = <ChartPoint>[];
-      for (var j = 0; j < pResp.price.length && j < unixSeconds.length; j++) {
+
+      for (
+        var j = 0;
+        j < productionType.data.length && j < unixSeconds.length;
+        j++
+      ) {
         final seconds = unixSeconds[j];
-        final ts = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-        points.add(ChartPoint(ts, pResp.price[j]));
+        final timestamp = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+        final value = productionType.data[j] ?? 0;
+        points.add(ChartPoint(timestamp, value));
       }
+
+      final color =
+          state.assignedColors[productionType.name] ??
+          Colors.primaries[i % Colors.primaries.length];
 
       seriesList.add(
         ChartSeries(
           points: points,
-          color: Colors.primaries[0],
-          name: 'Price (${pResp.unit})',
-        ),
-      );
-
-      final visibleSeries = seriesList
-          .where(
-            (s) =>
-                state.selectedSeriesNames.contains(s.name) ||
-                state.selectedMetric == 'price',
-          )
-          .toList();
-
-      if (visibleSeries.isEmpty) {
-        return const KeyedSubtree(
-          key: ValueKey('no-series'),
-          child: Center(child: Text('No series selected.')),
-        );
-      }
-
-      return Row(
-        children: [
-          Expanded(
-            child: KeyedSubtree(
-              key: ValueKey(
-                '${unixSeconds.join(',')}-${state.selectedSeriesNames.join(',')}-${state.selectedMetric}',
-              ),
-              child: AreaChart(
-                series: visibleSeries,
-                padding: allPadding36,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 150,
-            child: Legend(
-              allSeries: seriesList,
-              selectedNames: state.selectedSeriesNames,
-              onToggle: onToggleSeries,
-            ),
-          ),
-        ],
-      );
-    }
-
-    // total_power branch
-    final respTp = state.totalPowerResponse;
-    if (respTp == null) {
-      return const KeyedSubtree(
-        key: ValueKey('empty'),
-        child: Center(
-          child: Text('No data. Pick a range and press Update Chart.'),
+          color: color,
+          name: productionType.name,
         ),
       );
     }
 
-    final unixSeconds = respTp.unixSeconds;
-    final seriesList = <ChartSeries>[];
+    return seriesList;
+  }
 
-    for (var i = 0; i < respTp.productionTypes.length; i++) {
-      final p = respTp.productionTypes[i];
-      final points = <ChartPoint>[];
-      for (var j = 0; j < p.data.length && j < unixSeconds.length; j++) {
-        final seconds = unixSeconds[j];
-        final ts = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+  List<ChartSeries> _buildPriceSeries(PriceResponse response) {
+    final points = <ChartPoint>[];
+    final unixSeconds = response.unixSeconds;
 
-        /// Assume null data points are zero
-        points.add(ChartPoint(ts, p.data[j] ?? 0));
-      }
-
-      final color = Colors.primaries[i % Colors.primaries.length];
-
-      seriesList.add(ChartSeries(points: points, color: color, name: p.name));
+    for (var j = 0; j < response.price.length && j < unixSeconds.length; j++) {
+      final seconds = unixSeconds[j];
+      final timestamp = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+      points.add(ChartPoint(timestamp, response.price[j]));
     }
 
-    final visibleSeries = seriesList
-        .where(
-          (s) =>
-              state.selectedSeriesNames.contains(s.name) ||
-              state.selectedMetric == 'price',
-        )
+    final seriesName = 'Price (${response.unit})';
+    final color = state.assignedColors[seriesName] ?? Colors.blue;
+
+    return [
+      ChartSeries(
+        points: points,
+        color: color,
+        name: seriesName,
+      ),
+    ];
+  }
+
+  List<ChartSeries> _buildRenewableSeries(
+    RenewableShareResponse response,
+    String baseName,
+  ) {
+    final points = <ChartPoint>[];
+    final unixSeconds = response.unixSeconds;
+
+    // Use the shorter of the two arrays to prevent index out of bounds
+    final dataLength = math.min(response.data.length, unixSeconds.length);
+
+    for (var j = 0; j < dataLength; j++) {
+      final seconds = unixSeconds[j];
+      final timestamp = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+      final value =
+          response.data[j] ?? 0.0; // Handle null values by treating as 0
+      points.add(ChartPoint(timestamp, value));
+    }
+
+    final seriesNameWithUnit = '$baseName (${response.unit})';
+    final color = state.assignedColors[seriesNameWithUnit] ??
+        (baseName.contains('Solar') ? Colors.orange : Colors.green);
+
+    return [
+      ChartSeries(
+        points: points,
+        color: color,
+        name: baseName,
+      ),
+    ];
+  }
+
+  List<ChartSeries> _getVisibleSeries(List<ChartSeries> allSeries) {
+    return allSeries
+        .where((series) => state.selectedSeriesNames.contains(series.name))
         .toList();
+  }
 
-    if (visibleSeries.isEmpty) {
-      return const KeyedSubtree(
-        key: ValueKey('no-series'),
-        child: Center(child: Text('No series selected.')),
-      );
+  String _getDataKey() {
+    final keys = <String>[];
+
+    if (state.totalPowerResponse != null) {
+      keys.add(state.totalPowerResponse!.unixSeconds.join(','));
+    }
+    if (state.priceResponse != null) {
+      keys.add(state.priceResponse!.unixSeconds.join(','));
+    }
+    if (state.solarShareResponse != null) {
+      keys.add(state.solarShareResponse!.unixSeconds.join(','));
+    }
+    if (state.windOnshoreShareResponse != null) {
+      keys.add(state.windOnshoreShareResponse!.unixSeconds.join(','));
     }
 
-    return Row(
-      children: [
-        Expanded(
-          child: KeyedSubtree(
-            key: ValueKey(
-              '${unixSeconds.join(',')}-${state.selectedSeriesNames.join(',')}-${state.selectedMetric}',
-            ),
-            child: AreaChart(
-              series: visibleSeries,
-              padding: allPadding36,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        SizedBox(
-          width: 150,
-          child: Legend(
-            allSeries: seriesList,
-            selectedNames: state.selectedSeriesNames,
-            onToggle: onToggleSeries,
-          ),
-        ),
-      ],
-    );
+    return keys.join('|');
   }
 }

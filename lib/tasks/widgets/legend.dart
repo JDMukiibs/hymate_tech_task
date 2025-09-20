@@ -1,5 +1,6 @@
 import 'package:custom_charts/custom_charts.dart';
 import 'package:flutter/material.dart';
+import 'package:hymate_tech_task/shared/extensions/extensions.dart';
 
 /// Vertical legend used alongside the chart
 class Legend extends StatelessWidget {
@@ -37,7 +38,7 @@ class Legend extends StatelessWidget {
             s.name,
             style: TextStyle(
               fontSize: 12,
-              color: Theme.of(context).textTheme.bodyLarge?.color,
+              color: context.theme.textTheme.bodyLarge?.color,
             ),
           ),
           trailing: Checkbox(

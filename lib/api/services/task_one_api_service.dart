@@ -12,6 +12,10 @@ abstract class TaskOneApiServiceInterface {
   });
 
   Future<PriceResponse> getPrice({required PriceRequest request});
+
+  Future<RenewableShareResponse> getSolarShare({required String country});
+
+  Future<RenewableShareResponse> getWindOnshoreShare({required String country});
 }
 
 abstract class _TaskOneApiService {
@@ -20,9 +24,14 @@ abstract class _TaskOneApiService {
   });
 
   Future<PriceResponse> getPrice({required PriceRequest request});
+
+  Future<RenewableShareResponse> getSolarShare({required String country});
+
+  Future<RenewableShareResponse> getWindOnshoreShare({required String country});
 }
 
-class TaskOneApiService extends _TaskOneApiService implements TaskOneApiServiceInterface {
+class TaskOneApiService extends _TaskOneApiService
+    implements TaskOneApiServiceInterface {
   TaskOneApiService({
     required ApiClient apiClient,
   }) : _apiClient = apiClient;
@@ -30,6 +39,8 @@ class TaskOneApiService extends _TaskOneApiService implements TaskOneApiServiceI
   final ApiClient _apiClient;
   static const String _totalPowerEndpoint = 'total_power';
   static const String _priceEndpoint = 'price';
+  static const String _solarShareEndpoint = 'solar_share';
+  static const String _windOnshoreShareEndpoint = 'wind_onshore_share';
 
   // TODO(Joshua): getTotalPower keeps failing with 422 from the API, need to investigate further.
   // TODO(Joshua): Also I think I should be able to put total power and price in the same  chart  I think
@@ -111,6 +122,10 @@ class TaskOneApiService extends _TaskOneApiService implements TaskOneApiServiceI
     } catch (error) {
       if (error is DioException && error.response?.statusCode == 404) {
         throw const HymateTechTaskNotFoundException();
+      } else if (error is DioException && error.response?.statusCode == 422) {
+        throw HymateTechTaskValidationErrorException(
+          error.response?.statusMessage,
+        );
       } else if (error is DioException && error.response?.statusCode == 500) {
         throw HymateTechTaskException(error.response?.statusMessage);
       }
@@ -120,6 +135,86 @@ class TaskOneApiService extends _TaskOneApiService implements TaskOneApiServiceI
 
     throw const HymateTechTaskException(
       'Something went wrong when fetching price data.',
+    );
+  }
+
+  @override
+  Future<RenewableShareResponse> getSolarShare({
+    required String country,
+  }) async {
+    late final Response<dynamic> response;
+
+    final queryParameters = <String, dynamic>{
+      'country': country,
+    };
+
+    try {
+      response = await _apiClient.get(
+        _solarShareEndpoint,
+        queryParameters: queryParameters,
+      );
+
+      if (response.statusCode == 200) {
+        return RenewableShareResponse.fromJson(
+          jsonDecode(response.data as String) as Map<String, dynamic>,
+        );
+      }
+    } catch (error) {
+      if (error is DioException && error.response?.statusCode == 404) {
+        throw const HymateTechTaskNotFoundException();
+      } else if (error is DioException && error.response?.statusCode == 422) {
+        throw HymateTechTaskValidationErrorException(
+          error.response?.statusMessage,
+        );
+      } else if (error is DioException && error.response?.statusCode == 500) {
+        throw HymateTechTaskException(error.response?.statusMessage);
+      }
+
+      rethrow;
+    }
+
+    throw const HymateTechTaskException(
+      'Something went wrong when fetching solar share data.',
+    );
+  }
+
+  @override
+  Future<RenewableShareResponse> getWindOnshoreShare({
+    required String country,
+  }) async {
+    late final Response<dynamic> response;
+
+    final queryParameters = <String, dynamic>{
+      'country': country,
+    };
+
+    try {
+      response = await _apiClient.get(
+        _windOnshoreShareEndpoint,
+        queryParameters: queryParameters,
+      );
+
+      if (response.statusCode == 200) {
+        return RenewableShareResponse.fromJson(
+          jsonDecode(response.data as String) as Map<String, dynamic>,
+        );
+      }
+    } catch (error) {
+      if (error is DioException && error.response?.statusCode == 404) {
+        throw const HymateTechTaskNotFoundException();
+      } else if (error is DioException && error.response?.statusCode == 422) {
+        throw HymateTechTaskValidationErrorException(
+          error.response?.statusMessage,
+        );
+      } else if (error is DioException && error.response?.statusCode == 500) {
+        throw HymateTechTaskException(error.response?.statusMessage);
+      }
+
+      rethrow;
+    }
+
+    throw const HymateTechTaskException(
+      'Something went wrong when fetching solar share data.',
     );
   }
 }

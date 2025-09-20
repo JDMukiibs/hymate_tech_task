@@ -20,7 +20,7 @@ class TaskTwoTreeState extends Equatable {
       availableDatapointsToPlot,
       const [],
       const [],
-      '',
+      null,
       null,
       const {},
     );
@@ -29,7 +29,7 @@ class TaskTwoTreeState extends Equatable {
   final List<DatapointHierarchyNode> availableDatapointsToPlot;
   final List<DatapointHierarchyNode> selectedDatapoints;
   final List<DatapointHierarchyNode> selectedCategories;
-  final String generatedPlotRequest;
+  final PlotRequest? generatedPlotRequest;
   final Plot? generatedPlot;
 
   /// A map of assigned colors for each selected datapoint ID.
@@ -40,7 +40,7 @@ class TaskTwoTreeState extends Equatable {
     List<DatapointHierarchyNode>? availableDatapointsToPlot,
     List<DatapointHierarchyNode>? selectedDatapoints,
     List<DatapointHierarchyNode>? selectedCategories,
-    String? generatedPlotRequest,
+    PlotRequest? generatedPlotRequest,
     Plot? generatedPlot,
     Map<String, Color>? assignedColors,
   }) {

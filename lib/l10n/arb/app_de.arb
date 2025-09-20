@@ -2,7 +2,7 @@
   "@@locale": "de",
   "homeAppBarTitle": "Startseite",
   "@homeAppBarTitle": {
-    "description": "Text, der in der AppBar der Startseite angezeigt wird"
+    "description": "Text, der in der App-Leiste der Startseite angezeigt wird"
   },
   "homeAppBarMessage": "Willkommen auf der Startseite",
   "@homeAppBarMessage": {
@@ -14,34 +14,130 @@
   },
   "languageAppBarTitle": "Sprache",
   "@languageAppBarTitle": {
-    "description": "Text für den Titel der App-Leiste der Sprachauswahlseite"
+    "description": "Text für den Titel der App-Leiste der Seite zur Sprachauswahl"
   },
   "selectLanguage": "Sprache auswählen",
   "@selectLanguage": {
-    "description": "Text für die Sprachauswahlseite"
+    "description": "Text für den Titel der App-Leiste der Seite zur Sprachauswahl"
   },
-  "taskOnePageAppBarTitle": "Task One",
+  "taskOnePageAppBarTitle": "Aufgabe Eins",
   "@taskOnePageAppBarTitle": {
-    "description": "AppBar title for Task One page"
+    "description": "Titel der App-Leiste für die Seite Aufgabe Eins"
   },
-  "taskOnePagePlaceholderMessage": "This is where Task One will be implemented.",
+  "taskOnePagePlaceholderMessage": "Hier wird Aufgabe Eins implementiert.",
   "@taskOnePagePlaceholderMessage": {
-    "description": "Placeholder message for Task One page body"
+    "description": "Platzhalternachricht für den Hauptteil der Seite Aufgabe Eins"
   },
-  "taskTwoPageAppBarTitle": "Task Two",
+  "taskTwoPageAppBarTitle": "Aufgabe Zwei",
   "@taskTwoPageAppBarTitle": {
-    "description": "AppBar title for Task Two page"
+    "description": "Titel der App-Leiste für die Seite Aufgabe Zwei"
   },
-  "taskTwoPagePlaceholderMessage": "This is where Task Two will be implemented.",
+  "taskTwoPagePlaceholderMessage": "Hier wird Aufgabe Zwei implementiert.",
   "@taskTwoPagePlaceholderMessage": {
-    "description": "Placeholder message for Task Two page body"
+    "description": "Platzhalternachricht für den Hauptteil der Seite Aufgabe Zwei"
   },
-  "homePageNavigateToTaskOneButtonText": "Zu Aufgabe Eins",
+  "homePageNavigateToTaskOneButtonText": "Gehe zu Aufgabe Eins",
   "@homePageNavigateToTaskOneButtonText": {
     "description": "Text für die Navigationsschaltfläche zu Aufgabe Eins auf der Startseite"
   },
-  "homePageNavigateToTaskTwoButtonText": "Zu Aufgabe Zwei",
+  "homePageNavigateToTaskTwoButtonText": "Gehe zu Aufgabe Zwei",
   "@homePageNavigateToTaskTwoButtonText": {
     "description": "Text für die Navigationsschaltfläche zu Aufgabe Zwei auf der Startseite"
+  },
+  "biddingZonesLabel": "Gebotszonen",
+  "countriesLabel": "Länder",
+  "startDateLabel": "Startdatum",
+  "endDateLabel": "Enddatum",
+  "selectMetricsLabel": "Metriken auswählen",
+  "fetchDataButtonLabel": "Daten abrufen",
+  "generatePlotButtonLabel": "Diagramm erstellen",
+  "noDataMessage": "Keine Daten für die ausgewählten Optionen verfügbar.",
+  "selectAtLeastOneMetricMessage": "Bitte wählen Sie mindestens eine Metrik aus.",
+  "fetchingDataMessage": "Daten werden abgerufen...",
+  "errorFetchingDataMessage": "Fehler beim Abrufen der Daten. Bitte versuchen Sie es erneut.",
+  "generatedPlotRequestTitle": "Generierte Diagrammanfrage",
+  "@generatedPlotRequestTitle": {
+    "description": "Titel für das generierte Diagrammanfrage-Panel"
+  },
+  "noPlotGeneratedMessage": "Es wurde noch kein Diagramm erstellt. Wählen Sie Datenpunkte aus und klicken Sie auf \"Diagramm erstellen\".",
+  "@noPlotGeneratedMessage": {
+    "description": "Wird angezeigt, wenn noch kein Diagramm erstellt wurde"
+  },
+  "errorGeneratingPlotMessage": "Fehler beim Erstellen des Diagramms: {error}",
+  "@errorGeneratingPlotMessage": {
+    "description": "Fehlermeldung, wenn das Erstellen des Diagramms fehlschlägt",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorLoadingDataMessage": "Fehler beim Laden der Daten: {error}",
+  "@errorLoadingDataMessage": {
+    "description": "Wird angezeigt, wenn Datenpunkte nicht geladen werden können",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "datapointsLabel": "Datenpunkte",
+  "@datapointsLabel": {
+    "description": "Beschriftung für den Abschnitt der Datenpunkthierarchie"
+  },
+  "invalidFormMessage": "Ungültiges Formular",
+  "@invalidFormMessage": {
+    "description": "Validierungsmeldung, die angezeigt wird, wenn das Formular ungültig ist"
+  },
+  "invalidDateRangeMessage": "Ungültiger Datumsbereich",
+  "@invalidDateRangeMessage": {
+    "description": "Validierungsmeldung, die angezeigt wird, wenn der Datumsbereich ungültig ist"
+  },
+  "dataSeriesLabel": "Datenreihe",
+  "@dataSeriesLabel": {
+    "description": "Beschriftung für den Abschnitt der Datenreihe"
+  },
+  "clearSelectionsButtonText": "Auswahl löschen",
+  "@clearSelectionsButtonText": {
+    "description": "Schaltflächentext zum Löschen ausgewählter Datenpunkte"
+  },
+  "retryButtonText": "Erneut versuchen",
+  "@retryButtonText": {
+    "description": "Schaltflächentext zum erneuten Versuch einer Operation"
+  },
+  "showLegendLabel": "Legende anzeigen",
+  "@showLegendLabel": {
+    "description": "Beschriftung zum Anzeigen der Legende"
+  },
+  "appVersionLabel": "Version {version}",
+  "@appVersionLabel": {
+    "description": "Beschriftung, die die Anwendungsversion anzeigt",
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "requestedDataNotFoundMessage": "Die angeforderten Daten wurden nicht gefunden. Bitte überprüfen Sie Ihre Auswahl.",
+  "@requestedDataNotFoundMessage": {
+    "description": "Wird angezeigt, wenn die API keine Daten für die Anforderung findet"
+  },
+  "validationErrorMessage": "Es gab ein Problem mit Ihrer Anfrage. Bitte überprüfen Sie Ihre Eingaben.",
+  "@validationErrorMessage": {
+    "description": "Wird angezeigt, wenn die API einen Validierungsfehler zurückgibt"
+  },
+  "serverErrorMessage": "Beim Abrufen der Daten ist ein Serverfehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "@serverErrorMessage": {
+    "description": "Wird angezeigt, wenn beim Abrufen der Daten ein Serverfehler auftritt"
+  },
+  "unexpectedErrorMessage": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+  "@unexpectedErrorMessage": {
+    "description": "Generischer unerwarteter Fehler, der dem Benutzer angezeigt wird"
+  },
+  "unknownErrorMessage": "Ein unbekannter Fehler ist aufgetreten.",
+  "@unknownErrorMessage": {
+    "description": "Fallback-Fehlermeldung für unbekannte Fehler"
+  },
+  "chartLegendTitle": "Diagrammlegende",
+  "@chartLegendTitle": {
+    "description": "Titel für das Legendenfenster des Diagramms"
+  },
+  "closeButtonText": "Schließen",
+  "@closeButtonText": {
+    "description": "Generischer Schaltflächentext zum Schließen"
   }
 }

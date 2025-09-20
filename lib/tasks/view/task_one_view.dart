@@ -1,96 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hymate_tech_task/api/exceptions/exceptions.dart';
+import 'package:hymate_tech_task/l10n/l10n.dart';
 import 'package:hymate_tech_task/shared/layout/layout.dart';
 import 'package:hymate_tech_task/tasks/tasks.dart';
 
-// TODO(Joshua): Refactor this widget to separate the controller logic from the UI and use ReactiveForms for the controls.
-/// A reusable Task One view that shows controls and a line/area chart in the
-/// hymate style. It accepts a default [country] used when fetching data.
 class TaskOneView extends ConsumerWidget {
-  const TaskOneView({
-    super.key,
-    this.country = 'de',
-  });
+  const TaskOneView({super.key});
 
-  final String country;
+  String _getFriendlyErrorMessage(BuildContext context, Object? error) {
+    if (error is HymateTechTaskNotFoundException) {
+      return context.l10n.requestedDataNotFoundMessage;
+    } else if (error is HymateTechTaskValidationErrorException) {
+      return context.l10n.validationErrorMessage;
+    } else if (error is HymateTechTaskException) {
+      return context.l10n.serverErrorMessage;
+    } else if (error is Exception) {
+      return context.l10n.unexpectedErrorMessage;
+    }
+    return context.l10n.unknownErrorMessage;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(taskOneControllerProvider);
-    final controller = ref.read(
-      taskOneControllerProvider.notifier,
-    );
+    final controller = ref.read(taskOneControllerProvider.notifier);
 
-    // Listen for errors and show a SnackBar when they occur
-    ref.listen<TaskOneChartState>(taskOneControllerProvider, (previous, next) {
-      if (next.error != null && next.error != previous?.error) {
-        final messenger = ScaffoldMessenger.of(context);
-        messenger.clearSnackBars();
-        messenger.showSnackBar(SnackBar(content: Text(next.error!)));
-      }
-    });
+    // Listen for errors and show SnackBar
+    ref.listen<AsyncValue<TaskOneChartState>>(
+      taskOneControllerProvider,
+      (previous, next) {
+        next.whenOrNull(
+          error: (error, stackTrace) {
+            final messenger = ScaffoldMessenger.of(context);
+            messenger.clearSnackBars();
+            messenger.showSnackBar(
+              SnackBar(content: Text(_getFriendlyErrorMessage(context, error))),
+            );
+          },
+        );
+      },
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Controls(
-          state: state,
-          onPickRange: (start, end) async {
-            final picked = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime(2000),
-              lastDate: DateTime.now().add(const Duration(days: 1)),
-            );
-
-            if (picked != null) {
-              await controller.setTimeWindow(picked.start, picked.end);
-            }
-          },
-          onSetMetric: (metric) async => controller.setMetric(metric),
-          onSetBzn: (bzn) async => controller.setBzn(bzn),
-          onUpdateChart: () async {
-            if (state.selectedMetric == 'price') {
-              await controller.fetchPrice(bzn: state.selectedBzn);
-            } else {
-              await controller.fetchData(country: country);
-            }
-          },
-          onToggleSeries: controller.toggleSeriesSelection,
-        ),
-
-        // Chart area with animated transitions
+        const Controls(),
         Expanded(
           child: Card(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Padding(
               padding: allPadding8,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 600),
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                transitionBuilder: (child, animation) =>
-                    FadeTransition(opacity: animation, child: child),
-                child: ChartWithLegend(
-                  state: state,
-                  onToggleSeries: controller.toggleSeriesSelection,
-                  onRetry: () async {
-                    if (state.selectedMetric == 'price') {
-                      await controller.fetchPrice(bzn: state.selectedBzn);
-                    } else {
-                      await controller.fetchData(
-                        country: state.selectedCountry,
-                      );
-                    }
-                  },
+              child: state.when(
+                data: (chartState) => ChartWithLegend(
+                  state: chartState,
+                  selectedMetric: controller.selectedMetric,
                 ),
-                layoutBuilder: (currentChild, previousChildren) {
-                  return Stack(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ...previousChildren,
-                      if (currentChild != null) currentChild,
+                      const Icon(Icons.error, size: 48, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text(_getFriendlyErrorMessage(context, error)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: controller.fetchData,
+                        child: Text(context.l10n.retryButtonText),
+                      ),
                     ],
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ),

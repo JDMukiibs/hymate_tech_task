@@ -131,7 +131,8 @@ class AsyncTaskTwoNotifier extends AsyncNotifier<TaskTwoTreeState> {
   }
 
   bool get canGeneratePlot => formGroup.valid;
-  bool get hasPlotRequest => state.value!.generatedPlotRequest.isNotEmpty;
+
+  bool get hasPlotRequest => state.value!.generatedPlotRequest != null;
 
   void clearSelections() {
     state = AsyncValue.data(
@@ -150,11 +151,12 @@ class AsyncTaskTwoNotifier extends AsyncNotifier<TaskTwoTreeState> {
 
       final plotRequest = PlotRequest.fromPlot(plot);
 
-      final apiResponse = await ref
-          .watch(taskTwoApiServiceProvider)
-          .sendPlotRequest(plotRequest);
+      /// We don't have a real backend to send the request to
+      // final apiResponse = await ref
+      //     .watch(taskTwoApiServiceProvider)
+      //     .sendPlotRequest(plotRequest);
 
-      return currentState.copyWith(generatedPlotRequest: apiResponse);
+      return currentState.copyWith(generatedPlotRequest: plotRequest);
     });
   }
 
