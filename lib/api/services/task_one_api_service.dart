@@ -214,7 +214,7 @@ class TaskOneApiService extends _TaskOneApiService
     }
 
     throw const HymateTechTaskException(
-      'Something went wrong when fetching solar share data.',
+      'Something went wrong when fetching wind onshore share data.',
     );
   }
 }

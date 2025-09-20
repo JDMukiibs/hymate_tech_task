@@ -5,25 +5,20 @@ class ApiClient {
   ApiClient({
     required this.dio,
     this.baseUrl = 'https://api.energy-charts.info/',
-  });
+  }) {
+    dio.options
+      ..baseUrl = baseUrl
+      ..responseType = ResponseType.plain;
+  }
 
   final Dio dio;
   final String baseUrl;
-
-  BaseOptions _getBaseOptions(Map<String, String>? headers) {
-    return BaseOptions(
-      baseUrl: baseUrl,
-      headers: headers,
-      responseType: ResponseType.plain,
-    );
-  }
 
   Future<Response> get(
     String endpoint, {
     Map<String, String>? headers,
     Map<String, dynamic>? queryParameters,
   }) {
-    dio.options = _getBaseOptions(headers);
     return dio.get(endpoint, queryParameters: queryParameters);
   }
 
@@ -33,7 +28,6 @@ class ApiClient {
     Object? body,
     Map<String, dynamic>? queryParameters,
   }) async {
-    dio.options = _getBaseOptions(headers);
     return dio.post(
       endpoint,
       data: body,

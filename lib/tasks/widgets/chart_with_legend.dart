@@ -186,7 +186,7 @@ class ChartWithLegend extends ConsumerWidget {
       ChartSeries(
         points: points,
         color: color,
-        name: baseName,
+        name: seriesNameWithUnit,
       ),
     ];
   }
