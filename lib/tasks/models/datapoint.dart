@@ -1,11 +1,8 @@
 class DataPoint {
-  // "kW", "MW", etc.
-
   DataPoint({
     required this.id,
     required this.label,
     this.timeSeries,
-    this.categoryPath,
     this.unit,
   });
 
@@ -18,10 +15,7 @@ class DataPoint {
   /// The actual time-series data (populated after API response)
   final List<TimeSeriesValue>? timeSeries;
 
-  /// Category path for hierarchical organization
-  final List<String>? categoryPath; // ["Production", "Electrical production"]
-
-  /// Data type or unit information
+  /// Data type or unit information such as "kW" or "MW", etc.
   final String? unit;
 }
 

@@ -35,7 +35,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       if (mounted) {
         await context.router.replacePath(AppRoutes.homeRoute);
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       await ref.read(loggingServiceProvider).e(
             'Error during initial route checks',
             error: e,

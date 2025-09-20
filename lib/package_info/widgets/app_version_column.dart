@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hymate_tech_task/l10n/l10n.dart';
 import 'package:hymate_tech_task/package_info/package_info.dart';
 import 'package:hymate_tech_task/shared/layout/layout.dart';
 
@@ -20,7 +21,7 @@ class AppVersionColumn extends ConsumerWidget {
         child: Column(
           children: [
             Text(appName),
-            Text('Version $appVersion'),
+            Text(context.l10n.appVersionLabel(appVersion)),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:hymate_tech_task/shared/extensions/extensions.dart';
 
 typedef DialogOptionBuilder<T> = Map<String, T?> Function();
 
@@ -10,7 +11,7 @@ Future<T?> showGenericDialog<T>({
   required DialogOptionBuilder<T> optionsBuilder,
   Widget? contentWidgetOverride,
 }) {
-  final theme = Theme.of(context);
+  final theme = context.theme;
   final colorScheme = theme.colorScheme;
   final options = optionsBuilder();
 
@@ -25,7 +26,8 @@ Future<T?> showGenericDialog<T>({
             color: colorScheme.primary,
           ),
         ),
-        content: contentWidgetOverride ??
+        content:
+            contentWidgetOverride ??
             Text(
               content,
               style: theme.textTheme.bodyMedium,
@@ -52,7 +54,10 @@ Future<T?> showGenericDialog<T>({
                 }
               },
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -81,7 +86,7 @@ Future<T?> showPersistentGenericDialog<T>({
   required DialogOptionBuilder<T> optionsBuilder,
   Widget? contentWidgetOverride,
 }) {
-  final theme = Theme.of(context);
+  final theme = context.theme;
   final colorScheme = theme.colorScheme;
   final options = optionsBuilder();
 
@@ -97,7 +102,8 @@ Future<T?> showPersistentGenericDialog<T>({
             color: colorScheme.primary,
           ),
         ),
-        content: contentWidgetOverride ??
+        content:
+            contentWidgetOverride ??
             Text(
               content,
               style: theme.textTheme.bodyMedium,
@@ -124,7 +130,10 @@ Future<T?> showPersistentGenericDialog<T>({
                 }
               },
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

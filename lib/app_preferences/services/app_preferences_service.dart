@@ -44,7 +44,7 @@ class AppPreferencesService {
       final prefs = AppPreferences.fromMap(prefsMap);
       logger.i('Retrieved AppPreferences: $prefs');
       return prefs;
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       await logger.e(
         'Error parsing AppPreferences',
         error: e,

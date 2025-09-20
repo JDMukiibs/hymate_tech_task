@@ -7,20 +7,22 @@ Flutter Tech Task for Hymate
 
 Follow these steps to get the project up and running on your local machine.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-    cd your-repo-name
-    ```
-2.  **Install dependencies:**
-    ```bash
-    flutter pub get
-    ```
-3.  **Run the application:**
-    ```bash
-    flutter run
-    ```
-    (You may need to specify a device or browser for desktop/web: `flutter run -d chrome` or `flutter run -d windows`)
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+   cd your-repo-name
+   ```
+2. **Install dependencies:**
+   ```bash
+   melos bootstrap
+   flutter pub get
+   ```
+3. **Run the application:**
+   ```bash
+   flutter run
+   ```
+   (You may need to specify a device or browser for desktop/web: `flutter run -d chrome` or
+   `flutter run -d windows`)
 
 ---
 
@@ -35,33 +37,69 @@ You can find your current versions by running `flutter --version` in your termin
 
 ## 📝 Small Description of the Implementation
 
-This section provides a high-level overview of how the application is structured and key technical decisions.
+This section provides a high-level overview of how the application is structured and key technical
+decisions.
 
-* **Architecture:** Briefly describe the architectural pattern used (e.g., MVVM, BLoC, Provider, Riverpod, simple stateful widgets).
+* **Architecture:**
+    * Feature-based folder structure with separation of concerns (models, views,
+      providers/controllers, services, widgets).
+    * Uses Flutter Riverpod for state management.
+    * Package-based modularization with Melos for managing multiple packages.
+
 * **Key Features Implemented:**
-    * [List major features, e.g., "Chart visualization for energy data"]
-    * [e.g., "Dynamic data loading and rendering"]
-    * [e.g., "Responsive UI for desktop and web"]
+    * Chart visualization for energy data
+    * Interactive controls for selecting date ranges with time, metrics, and series
+    * Responsive design for desktop and web platforms
+    * Error handling for network requests and data parsing
+    * Custom theming and styling for a polished UI
+
 * **Core Libraries/Packages:**
-    * `package_name_1`: [Briefly describe its use]
-    * `package_name_2`: [Briefly describe its use]
-* **Data Handling:** [How is data fetched, parsed, and managed? e.g., "Uses a mock API service for data fetching."]
+    * `custom_charts`: The custom charting package developed as part of the task with coordination
+      between multiple series, legends, and axes.
+    * `flutter_riverpod`: For state management and dependency injection.
+    * `dio`: For making network requests to fetch data.
+
+* **Data Handling:**
+    * Task One uses an api service to fetch data from the given data source:
+      `https://api.energy-charts.info/`
+    * Data is parsed into Dart models using `json_serializable`.
+    * Error handling is implemented for network requests and data parsing.
+    * A simple in-memory caching layer is used to avoid redundant network requests with the help of
+      DioCacheInterceptor.
 
 ---
 
 ## 💡 Notes about Assumptions, Limitations, or Extra Work Done
 
 * **Assumptions:**
-    * [e.g., "Assumed data would be available in a specific JSON format."]
-    * [e.g., "Assumed the target environment would be desktop/web, prioritizing responsive layout over mobile-specific gestures."]
+    * Task One:
+        * The data source is reliable and returns data in the expected format.
+        * Date ranges are inclusive of the start and end dates.
+        * For `total_power` metric, for some production types particularly "Hydro Pumped Storage
+          consumption" and "Cross border electricity trading", negative values are possible and
+          should be displayed as-is.
+    * Task Two:
+        * For Plot and Graph the actual API response would fill out the values to be plotted.
+        *
 * **Limitations:**
-    * [e.g., "Currently, data refresh is manual; no real-time updates implemented."]
-    * [e.g., "Error handling is basic for network requests."]
-    * [e.g., "No extensive unit/integration tests are included due to time constraints."]
+    * A mem cache is what is used for the caching layer, which means that data is lost when the app
+      is restarted. A more robust caching solution (e.g., local database or file storage) would be
+      needed for a production app.
+    * The charting package is basic and may not cover all edge cases or advanced features found in
+      mature charting libraries.
+    * The UI is designed primarily for desktop and web; mobile support is not fully optimized.
+    * Some error handling is basic and could be improved for a production app.
+    * No extensive unit/integration tests are included due to time constraints.
 * **Extra Work Done:**
-    * [e.g., "Implemented a custom theme to match a specific brand guide."]
-    * [e.g., "Created a reusable chart component that can be easily extended."]
-    * [e.g., "Designed a custom 404 error page (referencing the one we made earlier!)."]
+    * Implemented a custom theme to match a specific brand guide.
+    * Created a custom package for charting with help from an LLM as I've not spent plenty of time
+      with charts in Flutter.
+    * Created some resuable widgets for common UI elements (e.g., buttons, dropdowns).
+    * Added performance tests for JSON parsing to ensure efficiency with large datasets.
+    * Setup Melos for managing multiple packages in a monorepo structure.
+    * Setup linting and formatting rules for consistent code style.
+    * Setup localization support using `flutter_localizations` package. (German mostly Gemini
+      translation)
 
 ---
 
@@ -70,9 +108,77 @@ This section provides a high-level overview of how the application is structured
 For your reference, here's an estimate of time spent on key tasks:
 
 * **Project Setup & Environment Configuration:** `2.5 hours`
-* **Core Chart Implementation:** `1.5 hours*`
-* **Data Integration (Mock/API):** `[e.g., 3 hours]`
-* **UI/UX (Layout, Styling, Responsiveness):** `[e.g., 4 hours]`
-* **Error Handling & Edge Cases:** `[e.g., 1 hour]`
-* **README Documentation:** `[e.g., 0.5 hours]`
-* **Total Estimated Time:** `[e.g., 16.5 hours]`
+* **Core Chart Implementation:** `7 hours`
+* **Data Integration (Mock/API):** `8 hours`
+* **UI/UX (Layout, Styling, Responsiveness):** `10 hours`
+* **Error Handling & Edge Cases:** `2 hours`
+* **README Documentation:** `1 hour`
+* **Total Estimated Time:** `36 hours`
+
+---
+
+## 🧪 Performance tests (parsing) -- Copilot
+
+A set of performance-focused tests live under `test/perf/parse_performance_test.dart`. These tests
+measure
+how long it takes to parse large JSON responses into the project's `DatapointHierarchyNode` model.
+They
+are separated from the fast unit tests so you can run them manually when you want reliable timing
+data.
+
+What is measured
+
+- jsonDecode (string -> Map/List) time.
+- The generated `fromJson` model mapping time (Map -> `DatapointHierarchyNode`).
+
+Test characteristics
+
+- Each test runs a small warm-up phase to stabilize JIT/VM behavior.
+- Each measurement runs multiple iterations and reports median and average timings to reduce noise.
+- Timings are printed in human-friendly units (milliseconds/ms or seconds/s) for easier
+  interpretation.
+
+Included benchmarks
+
+- Depth benchmark: measures parsing when JSON is very deep (single chain of nested children). Useful
+  to
+  check stack/recursion and per-node parsing costs.
+- Width benchmark: measures parsing when JSON has many sibling nodes at one level (wide trees).
+  Useful to
+  check the impact of large payload sizes and many sibling objects.
+
+How to run (Windows cmd.exe)
+
+- Run only the performance tests (recommended):
+
+```cmd
+flutter test test\perf\parse_performance_test.dart -r expanded
+```
+
+- Run a single test file (same as above) or the whole test suite if you prefer.
+
+Interpreting the outputs
+
+- Each benchmark prints median and average timings for both the decode and fromJson stages.
+- Timings are printed as either `XXX.X ms` or `Y.YYY s` depending on magnitude.
+- Prefer the median for stability (less sensitive to outliers). You can use the average to
+  understand total
+  runtime across iterations.
+
+Recommendations
+
+- Run these perf tests on the same machine/environment when comparing results to avoid cross-machine
+  variance.
+- Run them manually (they are under `test/perf/`) rather than as part of CI unless you want a
+  performance
+  gating policy (in which case choose conservative thresholds).
+
+Example output (abbreviated)
+
+- Depth 100 decode median=1.2 ms avg=1.4 ms
+- Depth 100 fromJson median=0.12 ms avg=0.14 ms
+- Width 200 decode median=0.20 ms avg=0.19 ms
+- Width 200 fromJson median=0.06 ms avg=0.06 ms
+
+---
+

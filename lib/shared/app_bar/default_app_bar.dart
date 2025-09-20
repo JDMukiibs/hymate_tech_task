@@ -25,8 +25,8 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final componentColor =
         context.theme.colorScheme.brightness == Brightness.light
-            ? context.theme.colorScheme.onPrimary
-            : context.theme.colorScheme.onSurface;
+        ? context.theme.colorScheme.onPrimary
+        : context.theme.colorScheme.onSurface;
     return AppBar(
       centerTitle: centerTitle,
       leading: Visibility(
@@ -38,7 +38,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: InkWell(
                 onTap: () => context.router.pop(),
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: allPadding12,
                   child: Icon(
                     Icons.arrow_back_ios_new_outlined,
                     color: componentColor,
