@@ -41,7 +41,7 @@ You can find your current versions by running `flutter --version` in your termin
 |-------------------------------|-------------------------------|
 | ![task_one.png](task_one.png) | ![task_two.png](task_two.png) |
 
-https://github.com/JDMukiibs/hymate_tech_task/blob/main/demo.mp4 
+https://github.com/user-attachments/assets/43dd01b1-9324-4345-a3c9-1c760b8c3d5a
 
 ---
 
